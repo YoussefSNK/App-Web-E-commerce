@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fast Food Dashboard</title>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+</head>
+<body>
+    <h1>Fast Food Dashboard</h1>
+    <div id="burger-sales"></div>
+    <div id="drink-sales"></div>
+    <div id="monthly-revenue"></div>
+
+    <script>
+        // Charger les données des ventes de burgers
+        d3.json('/api/burger_sales').then(data => {
+            const svg = d3.select("#burger-sales").append("svg").attr("width", 500).attr("height", 300);
+            // Code pour créer un graphique avec D3.js
+        });
+
+        // Charger les données des ventes de boissons
+        d3.json('/api/drink_sales').then(data => {
+            const svg = d3.select("#drink-sales").append("svg").attr("width", 500).attr("height", 300);
+            // Code pour créer un graphique avec D3.js
+        });
+
+        // Charger les données du chiffre d'affaires mensuel
+        d3.json('/api/monthly_revenue').then(data => {
+            const svg = d3.select("#monthly-revenue").append("svg").attr("width", 500).attr("height", 300);
+            // Code pour créer un graphique avec D3.js
+        });
+    </script>
+</body>
+</html>

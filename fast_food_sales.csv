@@ -1,0 +1,34 @@
+date;category;item;sales;revenue
+01/01/2023;burger;Cheeseburger;50;250
+01/01/2023;burger;Veggie Burger;30;180
+01/01/2023;drink;Coke;100;150
+01/01/2023;drink;Pepsi;80;120
+01/02/2023;burger;Cheeseburger;60;300
+01/02/2023;burger;Veggie Burger;40;240
+01/02/2023;drink;Coke;110;165
+01/02/2023;drink;Pepsi;90;135
+01/01/2023;burger;Chicken Burger;40;200
+01/01/2023;burger;Bacon Burger;35;210
+01/01/2023;burger;Fish Burger;25;175
+01/02/2023;burger;Chicken Burger;45;225
+01/02/2023;burger;Bacon Burger;50;300
+01/02/2023;burger;Fish Burger;30;210
+01/03/2023;burger;Cheeseburger;55;275
+01/03/2023;burger;Veggie Burger;35;210
+01/03/2023;drink;Coke;120;180
+01/03/2023;drink;Pepsi;85;127.5
+01/03/2023;drink;Sprite;60;90
+01/03/2023;drink;Fanta;50;75
+01/04/2023;burger;Cheeseburger;65;325
+01/04/2023;burger;Chicken Burger;50;250
+01/04/2023;burger;Fish Burger;35;245
+01/04/2023;drink;Coke;130;195
+01/04/2023;drink;Pepsi;95;142.5
+01/04/2023;drink;Sprite;65;97.5
+01/04/2023;drink;Fanta;70;105
+01/05/2023;burger;Bacon Burger;45;270
+01/05/2023;burger;Cheeseburger;70;350
+01/05/2023;drink;Coke;140;210
+01/05/2023;drink;Pepsi;100;150
+01/05/2023;drink;Sprite;75;112.5
+01/05/2023;drink;Fanta;80;120
