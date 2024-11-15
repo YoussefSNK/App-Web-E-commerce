@@ -5,7 +5,10 @@ app = Flask(__name__)
 
 try:
     # Charger les données
-    data = pd.read_csv('fast_food_sales.csv')
+    data = pd.read_csv('fast_food_sales.csv', delimiter=';')
+    print("Data preview:")
+    print(data.head())
+
 except Exception as e:
     print(f"Error loading CSV file: {e}")
 
@@ -16,6 +19,7 @@ def index():
 @app.route('/api/burger_sales')
 def get_burger_sales():
     try:
+        print("Loaded data columns:", data.columns)  # Afficher les colonnes disponibles
         burger_sales = data[data['category'] == 'burger'].groupby('item')['sales'].sum().to_dict()
         return jsonify(burger_sales)
     except Exception as e:
