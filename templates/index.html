@@ -13,21 +13,117 @@
     <script>
         // Charger les données des ventes de burgers
         d3.json('/api/burger_sales').then(data => {
+            console.log("Burger sales data:", data);  // Log des données
             const svg = d3.select("#burger-sales").append("svg").attr("width", 500).attr("height", 300);
-            // Code pour créer un graphique avec D3.js
-        });
+            
+            const margin = {top: 20, right: 30, bottom: 40, left: 40};
+            const width = 500 - margin.left - margin.right;
+            const height = 300 - margin.top - margin.bottom;
+
+            const x = d3.scaleBand()
+                .domain(Object.keys(data))
+                .range([margin.left, width - margin.right])
+                .padding(0.1);
+
+            const y = d3.scaleLinear()
+                .domain([0, d3.max(Object.values(data))])
+                .nice()
+                .range([height - margin.bottom, margin.top]);
+
+            svg.append("g")
+                .attr("fill", "steelblue")
+                .selectAll("rect")
+                .data(Object.entries(data))
+                .join("rect")
+                .attr("x", d => x(d[0]))
+                .attr("y", d => y(d[1]))
+                .attr("height", d => y(0) - y(d[1]))
+                .attr("width", x.bandwidth());
+
+            svg.append("g")
+                .attr("transform", `translate(0,${height - margin.bottom})`)
+                .call(d3.axisBottom(x).tickSizeOuter(0));
+
+            svg.append("g")
+                .attr("transform", `translate(${margin.left},0)`)
+                .call(d3.axisLeft(y));
+        }).catch(error => console.error('Error fetching burger sales data:', error));
 
         // Charger les données des ventes de boissons
         d3.json('/api/drink_sales').then(data => {
+            console.log("Drink sales data:", data);  // Log des données
             const svg = d3.select("#drink-sales").append("svg").attr("width", 500).attr("height", 300);
-            // Code pour créer un graphique avec D3.js
-        });
+            
+            const margin = {top: 20, right: 30, bottom: 40, left: 40};
+            const width = 500 - margin.left - margin.right;
+            const height = 300 - margin.top - margin.bottom;
+
+            const x = d3.scaleBand()
+                .domain(Object.keys(data))
+                .range([margin.left, width - margin.right])
+                .padding(0.1);
+
+            const y = d3.scaleLinear()
+                .domain([0, d3.max(Object.values(data))])
+                .nice()
+                .range([height - margin.bottom, margin.top]);
+
+            svg.append("g")
+                .attr("fill", "steelblue")
+                .selectAll("rect")
+                .data(Object.entries(data))
+                .join("rect")
+                .attr("x", d => x(d[0]))
+                .attr("y", d => y(d[1]))
+                .attr("height", d => y(0) - y(d[1]))
+                .attr("width", x.bandwidth());
+
+            svg.append("g")
+                .attr("transform", `translate(0,${height - margin.bottom})`)
+                .call(d3.axisBottom(x).tickSizeOuter(0));
+
+            svg.append("g")
+                .attr("transform", `translate(${margin.left},0)`)
+                .call(d3.axisLeft(y));
+        }).catch(error => console.error('Error fetching drink sales data:', error));
 
         // Charger les données du chiffre d'affaires mensuel
         d3.json('/api/monthly_revenue').then(data => {
+            console.log("Monthly revenue data:", data);  // Log des données
             const svg = d3.select("#monthly-revenue").append("svg").attr("width", 500).attr("height", 300);
-            // Code pour créer un graphique avec D3.js
-        });
+            
+            const margin = {top: 20, right: 30, bottom: 40, left: 40};
+            const width = 500 - margin.left - margin.right;
+            const height = 300 - margin.top - margin.bottom;
+
+            const x = d3.scaleBand()
+                .domain(Object.keys(data))
+                .range([margin.left, width - margin.right])
+                .padding(0.1);
+
+            const y = d3.scaleLinear()
+                .domain([0, d3.max(Object.values(data))])
+                .nice()
+                .range([height - margin.bottom, margin.top]);
+
+            svg.append("g")
+                .attr("fill", "steelblue")
+                .selectAll("rect")
+                .data(Object.entries(data))
+                .join("rect")
+                .attr("x", d => x(d[0]))
+                .attr("y", d => y(d[1]))
+                .attr("height", d => y(0) - y(d[1]))
+                .attr("width", x.bandwidth());
+
+            svg.append("g")
+                .attr("transform", `translate(0,${height - margin.bottom})`)
+                .call(d3.axisBottom(x).tickSizeOuter(0));
+
+            svg.append("g")
+                .attr("transform", `translate(${margin.left},0)`)
+                .call(d3.axisLeft(y));
+        }).catch(error => console.error('Error fetching monthly revenue data:', error));
     </script>
 </body>
 </html>
