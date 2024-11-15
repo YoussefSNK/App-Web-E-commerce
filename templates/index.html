@@ -3,17 +3,51 @@
 <head>
     <title>Fast Food Dashboard</title>
     <script src="https://d3js.org/d3.v6.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .chart-container {
+            display: inline-block;
+            margin: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+        }
+        svg {
+            font-size: 12px;
+        }
+        .axis text {
+            fill: #555;
+        }
+    </style>
 </head>
 <body>
     <h1>Fast Food Dashboard</h1>
-    <div id="burger-sales"></div>
-    <div id="drink-sales"></div>
-    <div id="monthly-revenue"></div>
+
+    <!-- Conteneurs pour chaque graphique -->
+    <div id="burger-sales" class="chart-container"></div>
+    <div id="drink-sales" class="chart-container"></div>
+    <div id="monthly-revenue" class="chart-container"></div>
 
     <script>
+        // Définir des couleurs pour chaque graphique
+        const colors = {
+            burger: "#ff7f0e", // Orange pour les ventes de burgers
+            drink: "#1f77b4", // Bleu pour les ventes de boissons
+            revenue: "#2ca02c" // Vert pour le chiffre d'affaires mensuel
+        };
+
         // Charger les données des ventes de burgers
         d3.json('/api/burger_sales').then(data => {
-            console.log("Burger sales data:", data);  // Log des données
             const svg = d3.select("#burger-sales").append("svg").attr("width", 500).attr("height", 300);
             
             const margin = {top: 20, right: 30, bottom: 40, left: 40};
@@ -31,7 +65,7 @@
                 .range([height - margin.bottom, margin.top]);
 
             svg.append("g")
-                .attr("fill", "steelblue")
+                .attr("fill", colors.burger)  // Couleur personnalisée pour les burgers
                 .selectAll("rect")
                 .data(Object.entries(data))
                 .join("rect")
@@ -51,7 +85,6 @@
 
         // Charger les données des ventes de boissons
         d3.json('/api/drink_sales').then(data => {
-            console.log("Drink sales data:", data);  // Log des données
             const svg = d3.select("#drink-sales").append("svg").attr("width", 500).attr("height", 300);
             
             const margin = {top: 20, right: 30, bottom: 40, left: 40};
@@ -69,7 +102,7 @@
                 .range([height - margin.bottom, margin.top]);
 
             svg.append("g")
-                .attr("fill", "steelblue")
+                .attr("fill", colors.drink)  // Couleur personnalisée pour les boissons
                 .selectAll("rect")
                 .data(Object.entries(data))
                 .join("rect")
@@ -89,7 +122,6 @@
 
         // Charger les données du chiffre d'affaires mensuel
         d3.json('/api/monthly_revenue').then(data => {
-            console.log("Monthly revenue data:", data);  // Log des données
             const svg = d3.select("#monthly-revenue").append("svg").attr("width", 500).attr("height", 300);
             
             const margin = {top: 20, right: 30, bottom: 40, left: 40};
@@ -107,7 +139,7 @@
                 .range([height - margin.bottom, margin.top]);
 
             svg.append("g")
-                .attr("fill", "steelblue")
+                .attr("fill", colors.revenue)  // Couleur personnalisée pour le chiffre d'affaires
                 .selectAll("rect")
                 .data(Object.entries(data))
                 .join("rect")
