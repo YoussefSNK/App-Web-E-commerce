@@ -32,3 +32,37 @@ date;category;item;sales;revenue
 01/05/2023;drink;Pepsi;100;150
 01/05/2023;drink;Sprite;75;112.5
 01/05/2023;drink;Fanta;80;120
+01/06/2023;burger;Cheeseburger;75;375
+01/06/2023;burger;Veggie Burger;50;300
+01/06/2023;burger;Chicken Burger;55;275
+01/06/2023;burger;Bacon Burger;60;360
+01/06/2023;burger;Fish Burger;40;280
+01/06/2023;drink;Coke;150;225
+01/06/2023;drink;Pepsi;110;165
+01/06/2023;drink;Sprite;85;127.5
+01/06/2023;drink;Fanta;90;135
+01/07/2023;burger;Cheeseburger;80;400
+01/07/2023;burger;Veggie Burger;60;360
+01/07/2023;burger;Chicken Burger;65;325
+01/07/2023;burger;Bacon Burger;70;420
+01/07/2023;burger;Fish Burger;50;350
+01/07/2023;drink;Coke;160;240
+01/07/2023;drink;Pepsi;120;180
+01/07/2023;drink;Sprite;95;142.5
+01/07/2023;drink;Fanta;100;150
+01/08/2023;burger;Cheeseburger;85;425
+01/08/2023;burger;Veggie Burger;65;390
+01/08/2023;burger;Chicken Burger;70;350
+01/08/2023;burger;Bacon Burger;75;450
+01/08/2023;burger;Fish Burger;55;385
+01/08/2023;drink;Coke;170;255
+01/08/2023;drink;Pepsi;130;195
+01/08/2023;drink;Sprite;100;150
+01/08/2023;drink;Fanta;110;165
+01/09/2023;burger;Beyond Burger;45;360
+01/09/2023;burger;Double Cheeseburger;60;480
+01/09/2023;burger;Slider Trio;75;375
+01/09/2023;drink;Root Beer;80;120
+01/09/2023;drink;Iced Tea;90;135
+01/09/2023;drink;Milkshake;50;250
+01/09/2023;drink;Lemonade;70;105
