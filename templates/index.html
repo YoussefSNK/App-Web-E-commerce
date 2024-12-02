@@ -48,7 +48,7 @@
 
         // Charger les données des ventes de burgers
         d3.json('/api/burger_sales').then(data => {
-            const svg = d3.select("#burger-sales").append("svg").attr("width", 500).attr("height", 300);
+            const svg = d3.select("#burger-sales").append("svg").attr("width", 500).attr("height", 250);
             
             const margin = {top: 20, right: 30, bottom: 40, left: 40};
             const width = 500 - margin.left - margin.right;
@@ -85,7 +85,7 @@
 
         // Charger les données des ventes de boissons
         d3.json('/api/drink_sales').then(data => {
-            const svg = d3.select("#drink-sales").append("svg").attr("width", 500).attr("height", 300);
+            const svg = d3.select("#drink-sales").append("svg").attr("width", 500).attr("height", 250);
             
             const margin = {top: 20, right: 30, bottom: 40, left: 40};
             const width = 500 - margin.left - margin.right;
