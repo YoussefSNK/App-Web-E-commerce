@@ -39,7 +39,6 @@
     <div id="monthly-revenue" class="chart-container"></div>
 
     <script>
-        // Définir des couleurs pour chaque graphique
         const colors = {
             burger: "#ff7f0e", // Orange pour les ventes de burgers
             drink: "#1f77b4", // Bleu pour les ventes de boissons
@@ -122,36 +121,53 @@
 
         // Charger les données du chiffre d'affaires mensuel
         d3.json('/api/monthly_revenue').then(data => {
-            const svg = d3.select("#monthly-revenue").append("svg").attr("width", 500).attr("height", 300);
-            
-            const margin = {top: 20, right: 30, bottom: 40, left: 40};
+            const svg = d3.select("#monthly-revenue").append("svg")
+                .attr("width", 500)
+                .attr("height", 250); // Augmenter la hauteur pour inclure le titre
+    
+            const margin = { top: 40, right: 30, bottom: 40, left: 40 }; // Espace pour le titre
             const width = 500 - margin.left - margin.right;
             const height = 300 - margin.top - margin.bottom;
-
+    
+            // Tableau des mois pour les noms
+            const months = [
+                "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
+                "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"
+            ];
+    
             const x = d3.scaleBand()
-                .domain(Object.keys(data))
+                .domain(Object.keys(data).map(d => months[+d - 1])) // Mapper les numéros aux noms des mois
                 .range([margin.left, width - margin.right])
                 .padding(0.1);
-
+    
             const y = d3.scaleLinear()
                 .domain([0, d3.max(Object.values(data))])
                 .nice()
                 .range([height - margin.bottom, margin.top]);
-
+    
+            // Titre du graphique
+            svg.append("text")
+                .attr("x", width / 2 + margin.left)
+                .attr("y", margin.top / 2)
+                .attr("text-anchor", "middle")
+                .attr("font-size", "16px")
+                .attr("font-weight", "bold")
+                .text("Revenu mensuel");
+    
             svg.append("g")
-                .attr("fill", colors.revenue)  // Couleur personnalisée pour le chiffre d'affaires
+                .attr("fill", colors.revenue) // Couleur personnalisée
                 .selectAll("rect")
                 .data(Object.entries(data))
                 .join("rect")
-                .attr("x", d => x(d[0]))
+                .attr("x", d => x(months[+d[0] - 1]))
                 .attr("y", d => y(d[1]))
                 .attr("height", d => y(0) - y(d[1]))
                 .attr("width", x.bandwidth());
-
+    
             svg.append("g")
                 .attr("transform", `translate(0,${height - margin.bottom})`)
                 .call(d3.axisBottom(x).tickSizeOuter(0));
-
+    
             svg.append("g")
                 .attr("transform", `translate(${margin.left},0)`)
                 .call(d3.axisLeft(y));
