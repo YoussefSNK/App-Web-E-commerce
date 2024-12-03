@@ -45,5 +45,15 @@ def get_monthly_revenue():
         print(f"Error in get_monthly_revenue: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
 
+@app.route('/api/category_sales')
+def get_category_sales():
+    try:
+        category_sales = data.groupby('category')['sales'].sum().to_dict()
+        return jsonify(category_sales)
+    except Exception as e:
+        print(f"Error in get_category_sales: {e}")
+        return jsonify({"error": "Internal Server Error"}), 500
+
+
 if __name__ == '__main__':
     app.run(debug=True)
