@@ -359,9 +359,11 @@
                     .selectAll("text")
                     .data(root.descendants().filter((d) => d.x1 - d.x0 > 0.03))
                         .join("text")
-                    .attr(
-                      "transform",
-                      (d) => `
+                    .attr("transform", (d) => {
+                      if (d.depth === 0) {
+                        return `translate(0, -10)`;
+                      }
+                      return `
                     rotate(${(((d.x0 + d.x1) / 2) * 180) / Math.PI - 90})
                             translate(${(d.y0 + d.y1) / 2},0)
                             rotate(${(d.x0 + d.x1) / 2 > Math.PI ? 180 : 0})
