@@ -21,6 +21,7 @@
             padding: 20px;
             background: #fff;
             border-radius: 8px;
+            margin-bottom: 50px;
         }
         svg {
             font-size: 12px;
@@ -50,9 +51,9 @@
 
         // Charger les données des ventes de burgers
         d3.json('/api/burger_sales').then(data => {
-            const svg = d3.select("#burger-sales").append("svg").attr("width", 500).attr("height", 250);
+            const svg = d3.select("#burger-sales").append("svg").attr("width", 500).attr("height", 300);
             
-            const margin = {top: 20, right: 30, bottom: 40, left: 40};
+            const margin = {top: 20, right: 30, bottom: 60, left: 40};
             const width = 500 - margin.left - margin.right;
             const height = 300 - margin.top - margin.bottom;
 
@@ -78,7 +79,10 @@
 
             svg.append("g")
                 .attr("transform", `translate(0,${height - margin.bottom})`)
-                .call(d3.axisBottom(x).tickSizeOuter(0));
+                .call(d3.axisBottom(x).tickSizeOuter(0))
+                .selectAll("text")
+                .attr("transform", "rotate(45)")
+                .style("text-anchor", "start");
 
             svg.append("g")
                 .attr("transform", `translate(${margin.left},0)`)
@@ -87,9 +91,9 @@
 
         // Charger les données des ventes de boissons
         d3.json('/api/drink_sales').then(data => {
-            const svg = d3.select("#drink-sales").append("svg").attr("width", 500).attr("height", 250);
+            const svg = d3.select("#drink-sales").append("svg").attr("width", 500).attr("height", 300);
             
-            const margin = {top: 20, right: 30, bottom: 40, left: 40};
+            const margin = {top: 20, right: 30, bottom: 60, left: 40};
             const width = 500 - margin.left - margin.right;
             const height = 300 - margin.top - margin.bottom;
 
@@ -115,7 +119,10 @@
 
             svg.append("g")
                 .attr("transform", `translate(0,${height - margin.bottom})`)
-                .call(d3.axisBottom(x).tickSizeOuter(0));
+                .call(d3.axisBottom(x).tickSizeOuter(0))
+                .selectAll("text")
+                .attr("transform", "rotate(45)")
+                .style("text-anchor", "start");
 
             svg.append("g")
                 .attr("transform", `translate(${margin.left},0)`)
@@ -126,9 +133,9 @@
         d3.json('/api/monthly_revenue').then(data => {
             const svg = d3.select("#monthly-revenue").append("svg")
                 .attr("width", 500)
-                .attr("height", 250); // Augmenter la hauteur pour inclure le titre
+                .attr("height", 300); // Augmenter la hauteur pour inclure le titre
     
-            const margin = { top: 40, right: 30, bottom: 40, left: 40 }; // Espace pour le titre
+            const margin = { top: 40, right: 30, bottom: 60, left: 40 }; // Espace pour le titre
             const width = 500 - margin.left - margin.right;
             const height = 300 - margin.top - margin.bottom;
     
@@ -169,7 +176,10 @@
     
             svg.append("g")
                 .attr("transform", `translate(0,${height - margin.bottom})`)
-                .call(d3.axisBottom(x).tickSizeOuter(0));
+                .call(d3.axisBottom(x).tickSizeOuter(0))
+                .selectAll("text")
+                .attr("transform", "rotate(45)")
+                .style("text-anchor", "start");
     
             svg.append("g")
                 .attr("transform", `translate(${margin.left},0)`)
