@@ -261,89 +261,136 @@
         }).catch(error => console.error('Error fetching category sales data:', error));
 
         // ERUPTION SOLAIRE
-        d3.json('/api/category_sales').then(categorySalesData => {
-            d3.json('/api/burger_sales').then(burgerSalesData => {
-                d3.json('/api/drink_sales').then(drinkSalesData => {
+      d3.json("/api/category_sales")
+        .then((categorySalesData) => {
+          d3.json("/api/burger_sales")
+            .then((burgerSalesData) => {
+              d3.json("/api/drink_sales")
+                .then((drinkSalesData) => {
                     const width = 500;
                     const radius = width / 2;
 
-                    const svg = d3.select("#sunburst-chart")
+                  const svg = d3
+                    .select("#sunburst-chart")
                         .append("svg")
                         .attr("width", width)
                         .attr("height", width)
                         .append("g")
                         .attr("transform", `translate(${radius}, ${radius})`);
 
-                    // Construire une structure hiérarchique pour le graphique
+                  // Construire une structure hiérarchique triée pour le graphique
                     const data = {
                         name: "Ventes",
                         children: [
                             {
                                 name: "Burger",
-                                children: Object.entries(burgerSalesData).map(([key, value]) => ({
-                                    name: key,
-                                    value
-                                }))
+                        children: Object.entries(burgerSalesData)
+                          .map(([key, value]) => ({ name: key, value }))
+                          .sort((a, b) => b.value - a.value), // Trier par quantité décroissante
                             },
                             {
                                 name: "Drink",
-                                children: Object.entries(drinkSalesData).map(([key, value]) => ({
-                                    name: key,
-                                    value
-                                }))
-                            }
-                        ]
+                        children: Object.entries(drinkSalesData)
+                          .map(([key, value]) => ({ name: key, value }))
+                          .sort((a, b) => b.value - a.value), // Trier par quantité décroissante
+                      },
+                    ],
                     };
 
-                    const partition = d3.partition()
-                        .size([2 * Math.PI, radius]);
+                  const partition = d3.partition().size([2 * Math.PI, radius]);
 
-                    const root = d3.hierarchy(data)
-                        .sum(d => d.value);
+                  const root = d3.hierarchy(data).sum((d) => d.value);
 
                     partition(root);
 
-                    const color = d3.scaleOrdinal()
-                        .domain(["Burger", "Drink"])
-                        .range(["#ff7f0e", "#1f77b4"]);
+                  // Définir les couleurs principales et leurs dégradés pour chaque catégorie
+                  const colorScales = {
+                    Burger: d3
+                      .scaleLinear()
+                      .domain([0, 1]) // Les poids seront normalisés
+                      .range(["#ffcc99", "#ff7f0e"]), // Couleur plus claire à plus foncée pour les burgers
+                    Drink: d3
+                      .scaleLinear()
+                      .domain([0, 1])
+                      .range(["#dbedff", "#0594f7"]), // Couleur plus claire à plus foncée pour les drinks
+                  };
 
-                    const arc = d3.arc()
-                        .startAngle(d => d.x0)
-                        .endAngle(d => d.x1)
-                        .innerRadius(d => d.y0)
-                        .outerRadius(d => d.y1);
+                  const arc = d3
+                    .arc()
+                    .startAngle((d) => d.x0)
+                    .endAngle((d) => d.x1)
+                    .innerRadius((d) => d.y0)
+                    .outerRadius((d) => d.y1);
 
                     // Dessiner les arcs
-                    svg.selectAll("path")
+                  svg
+                    .selectAll("path")
                         .data(root.descendants().slice(1)) // Ignorer le premier nœud (racine)
                         .join("path")
                         .attr("d", arc)
-                        .attr("fill", d => color(d.data.name) || "#d3d3d3")
+                    .attr("fill", (d) => {
+                      const parentName =
+                        d.depth === 1 ? d.data.name : d.parent.data.name; // Catégorie parent
+                      const scale = colorScales[parentName];
+                      return d.depth === 1
+                        ? scale(1)
+                        : scale(d.value / d.parent.value); // Dégradé pour les sous-catégories
+                    })
                         .on("mouseover", function (event, d) {
-                            d3.select(this).attr("stroke", "#000").attr("stroke-width", 1);
+                      d3.select(this)
+                        .attr("stroke", "#000")
+                        .attr("stroke-width", 1);
                         })
                         .on("mouseout", function () {
                             d3.select(this).attr("stroke", null);
                         })
                         .append("title")
-                        .text(d => `${d.ancestors().map(d => d.data.name).reverse().join(" > ")}\n${d.value || 0}`);
+                    .text(
+                      (d) =>
+                        `${d
+                          .ancestors()
+                          .map((d) => d.data.name)
+                          .reverse()
+                          .join(" > ")}\n${d.value || 0}`
+                    );
 
                     // Ajouter des labels
-                    svg.selectAll("text")
-                        .data(root.descendants().filter(d => d.x1 - d.x0 > 0.03))
+                  svg
+                    .selectAll("text")
+                    .data(root.descendants().filter((d) => d.x1 - d.x0 > 0.03))
                         .join("text")
-                        .attr("transform", d => `
-                            rotate(${((d.x0 + d.x1) / 2) * 180 / Math.PI - 90})
+                    .attr(
+                      "transform",
+                      (d) => `
+                    rotate(${(((d.x0 + d.x1) / 2) * 180) / Math.PI - 90})
                             translate(${(d.y0 + d.y1) / 2},0)
                             rotate(${(d.x0 + d.x1) / 2 > Math.PI ? 180 : 0})
-                        `)
+                `
+                    )
                         .attr("dy", "0.35em")
                         .attr("text-anchor", "middle")
-                        .text(d => d.data.name);
-                }).catch(error => console.error('Error fetching drink sales data for sunburst:', error));
-            }).catch(error => console.error('Error fetching burger sales data for sunburst:', error));
-        }).catch(error => console.error('Error fetching category sales data for sunburst:', error));
-
+                    .text((d) => d.data.name);
+                })
+                .catch((error) =>
+                  console.error(
+                    "Error fetching drink sales data for sunburst:",
+                    error
+                  )
+                );
+            })
+            .catch((error) =>
+              console.error(
+                "Error fetching burger sales data for sunburst:",
+                error
+              )
+            );
+        })
+        .catch((error) =>
+          console.error(
+            "Error fetching category sales data for sunburst:",
+            error
+          )
+        );
     </script>
 </body>
 </html>
