@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fast Food Dashboard</title>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .chart-container {
+            display: inline-block;
+            margin: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            margin-bottom: 50px;
+        }
+        svg {
+            font-size: 12px;
+        }
+        .axis text {
+            fill: #555;
+        }
+    </style>
+</head>
+<body>
+    <h1>Fast Food Dashboard</h1>
+
+    <!-- Conteneurs pour chaque graphique -->
+    <div id="burger-sales" class="chart-container"></div>
+    <div id="drink-sales" class="chart-container"></div>
+    <div id="monthly-revenue" class="chart-container"></div>
+    <div id="category-sales" class="chart-container"></div>
+    <div id="sunburst-chart" class="chart-container"></div>
+
+
+    <script>
+        const colors = {
+            burger: "#ff7f0e", // Orange pour les ventes de burgers
+            drink: "#1f77b4", // Bleu pour les ventes de boissons
+            revenue: "#2ca02c" // Vert pour le chiffre d'affaires mensuel
+        };
+
+        // Charger les données des ventes de burgers
+        d3.json('/api/burger_sales').then(data => {
+            const svg = d3.select("#burger-sales").append("svg").attr("width", 450).attr("height", 300);
+            
+            const margin = {top: 20, right: 30, bottom: 60, left: 40};
+            const width = 500 - margin.left - margin.right;
+            const height = 300 - margin.top - margin.bottom;
+
+            const x = d3.scaleBand()
+                .domain(Object.keys(data))
+                .range([margin.left, width - margin.right])
+                .padding(0.1);
+
+            const y = d3.scaleLinear()
+                .domain([0, d3.max(Object.values(data))])
+                .nice()
+                .range([height - margin.bottom, margin.top]);
+
+            // Ajouter un titre au graphique
+            svg.append("text")
+                .attr("x", (width / 2))             
+                .attr("y", margin.top / 2)
+                .attr("text-anchor", "middle")  
+                .style("font-size", "16px") 
+                .style("text-decoration", "underline")  
+                .text("Ventes de Burgers");
+
+            // Ajouter un tooltip
+            const tooltip = d3.select("body").append("div")
+                .attr("class", "tooltip")
+                .style("position", "absolute")
+                .style("visibility", "hidden")
+                .style("background", "#fff")
+                .style("border", "1px solid #ccc")
+                .style("padding", "5px")
+                .style("border-radius", "5px");
+
+            svg.append("g")
+                .attr("transform", `translate(0,${height - margin.bottom})`)
+                .call(d3.axisBottom(x))
+                .selectAll("text")
+                .attr("transform", "rotate(45)")
+                .style("text-anchor", "start");
+
+            svg.append("g")
+                .attr("transform", `translate(${margin.left},0)`)
+                .call(d3.axisLeft(y));
+
+            svg.selectAll(".bar")
+                .data(Object.entries(data))
+                .join("rect")
+                .attr("class", "bar")
+                .attr("x", d => x(d[0]))
+                .attr("y", d => y(d[1]))
+                .attr("width", x.bandwidth())
+                .attr("height", d => y(0) - y(d[1]))
+                .attr("fill", colors.burger)
+                .on("mouseover", (event, d) => {
+                    tooltip.style("visibility", "visible")
+                        .text(`${d[0]}: ${d[1]}`);
+                })
+                .on("mousemove", event => {
+                    tooltip.style("top", (event.pageY - 10) + "px")
+                        .style("left", (event.pageX + 10) + "px");
+                })
+                .on("mouseout", () => {
+                    tooltip.style("visibility", "hidden");
+                });
+
+        }).catch(error => console.error('Error fetching burger sales data:', error));
+
+        // Charger les données des ventes de boissons
+        d3.json('/api/drink_sales').then(data => {
+            const svg = d3.select("#drink-sales").append("svg").attr("width", 450).attr("height", 300);
+            
+            const margin = {top: 20, right: 30, bottom: 60, left: 40};
+            const width = 500 - margin.left - margin.right;
+            const height = 300 - margin.top - margin.bottom;
+
+            const x = d3.scaleBand()
+                .domain(Object.keys(data))
+                .range([margin.left, width - margin.right])
+                .padding(0.1);
+
+            const y = d3.scaleLinear()
+                .domain([0, d3.max(Object.values(data))])
+                .nice()
+                .range([height - margin.bottom, margin.top]);
+
+            // Ajouter un titre au graphique
+            svg.append("text")
+                .attr("x", (width / 2))             
+                .attr("y", margin.top / 2)
+                .attr("text-anchor", "middle")  
+                .style("font-size", "16px") 
+                .style("text-decoration", "underline")  
+                .text("Ventes de Boissons");
+
+            // Ajouter un tooltip
+            const tooltip = d3.select("body").append("div")
+                .attr("class", "tooltip")
+                .style("position", "absolute")
+                .style("visibility", "hidden")
+                .style("background", "#fff")
+                .style("border", "1px solid #ccc")
+                .style("padding", "5px")
+                .style("border-radius", "5px");
+
+            svg.append("g")
+                .attr("transform", `translate(0,${height - margin.bottom})`)
+                .call(d3.axisBottom(x))
+                .selectAll("text")
+                .attr("transform", "rotate(45)")
+                .style("text-anchor", "start");
+
+            svg.append("g")
+                .attr("transform", `translate(${margin.left},0)`)
+                .call(d3.axisLeft(y));
+
+            svg.selectAll(".bar")
+                .data(Object.entries(data))
+                .join("rect")
+                .attr("class", "bar")
+                .attr("x", d => x(d[0]))
+                .attr("y", d => y(d[1]))
+                .attr("width", x.bandwidth())
+                .attr("height", d => y(0) - y(d[1]))
+                .attr("fill", colors.drink)
+                .on("mouseover", (event, d) => {
+                    tooltip.style("visibility", "visible")
+                        .text(`${d[0]}: ${d[1]}`);
+                })
+                .on("mousemove", event => {
+                    tooltip.style("top", (event.pageY - 10) + "px")
+                        .style("left", (event.pageX + 10) + "px");
+                })
+                .on("mouseout", () => {
+                    tooltip.style("visibility", "hidden");
+                });
+
+        }).catch(error => console.error('Error fetching drink sales data:', error));
+
+        // Charger les données du chiffre d'affaires mensuel
+        d3.json('/api/monthly_revenue').then(data => {
+            const svg = d3.select("#monthly-revenue").append("svg")
+                .attr("width", 450)
+                .attr("height", 300); // Augmenter la hauteur pour inclure le titre
+    
+            const margin = { top: 40, right: 30, bottom: 60, left: 40 }; // Espace pour le titre
+            const width = 500 - margin.left - margin.right;
+            const height = 300 - margin.top - margin.bottom;
+    
+            // Tableau des mois pour les noms
+            const months = [
+                "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
+                "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"
+            ];
+    
+            const x = d3.scaleBand()
+                .domain(Object.keys(data).map(d => months[+d - 1])) // Mapper les numéros aux noms des mois
+                .range([margin.left, width - margin.right])
+                .padding(0.1);
+    
+            const y = d3.scaleLinear()
+                .domain([0, d3.max(Object.values(data))])
+                .nice()
+                .range([height - margin.bottom, margin.top]);
+    
+            // Ajouter un titre au graphique
+            svg.append("text")
+                .attr("x", (width / 2))             
+                .attr("y", margin.top / 2)
+                .attr("text-anchor", "middle")  
+                .style("font-size", "16px") 
+                .style("text-decoration", "underline")  
+                .text("Revenue mensuel");
+    
+            // Ajouter un tooltip
+            const tooltip = d3.select("body").append("div")
+                .attr("class", "tooltip")
+                .style("position", "absolute")
+                .style("visibility", "hidden")
+                .style("background", "#fff")
+                .style("border", "1px solid #ccc")
+                .style("padding", "5px")
+                .style("border-radius", "5px");
+    
+            svg.append("g")
+                .attr("fill", colors.revenue) // Couleur personnalisée
+                .selectAll("rect")
+                .data(Object.entries(data))
+                .join("rect")
+                .attr("x", d => x(months[+d[0] - 1]))
+                .attr("y", d => y(d[1]))
+                .attr("height", d => y(0) - y(d[1]))
+                .attr("width", x.bandwidth())
+                .on("mouseover", (event, d) => {
+                    tooltip.style("visibility", "visible")
+                        .text(`${months[+d[0] - 1]}: ${d[1]}`);
+                })
+                .on("mousemove", event => {
+                    tooltip.style("top", (event.pageY - 10) + "px")
+                        .style("left", (event.pageX + 10) + "px");
+                })
+                .on("mouseout", () => {
+                    tooltip.style("visibility", "hidden");
+                });
+    
+            svg.append("g")
+                .attr("transform", `translate(0,${height - margin.bottom})`)
+                .call(d3.axisBottom(x))
+                .selectAll("text")
+                .attr("transform", "rotate(45)")
+                .style("text-anchor", "start");
+    
+            svg.append("g")
+                .attr("transform", `translate(${margin.left},0)`)
+                .call(d3.axisLeft(y));
+        }).catch(error => console.error('Error fetching monthly revenue data:', error));
+
+        // Charger les données des ventes par catégorie pour le camembert
+        d3.json('/api/category_sales').then(data => {
+            const width = 300;
+            const height = 300;
+            const radius = Math.min(width, height) / 2 - 20; // Réduire le rayon pour s'adapter au SVG
+
+            const svg = d3.select("#category-sales")
+                .append("svg")
+                .attr("width", width)
+                .attr("height", height);
+
+            // Ajouter un titre au graphique
+            svg.append("text")
+                .attr("x", width / 2)
+                .attr("y", 20)
+                .attr("text-anchor", "middle")
+                .style("font-size", "16px")
+                .style("text-decoration", "underline")
+                .text("Ventes par Catégorie");
+
+            const g = svg.append("g")
+                .attr("transform", `translate(${width / 2}, ${height / 2 + 10})`); // Ajuster la position du groupe
+
+            const pie = d3.pie()
+                .value(d => d[1])
+                .sort(null);
+
+            const arc = d3.arc()
+                .innerRadius(0)
+                .outerRadius(radius);
+
+            const color = d3.scaleOrdinal()
+                .domain(Object.keys(data))
+                .range(["#ff7f0e", "#1f77b4"]); // Couleurs pour burger et drink
+
+            const pieData = pie(Object.entries(data));
+
+            // Ajouter un tooltip
+            const tooltip = d3.select("body").append("div")
+                .attr("class", "tooltip")
+                .style("position", "absolute")
+                .style("visibility", "hidden")
+                .style("background", "#fff")
+                .style("border", "1px solid #ccc")
+                .style("padding", "5px")
+                .style("border-radius", "5px");
+
+            // Dessiner les arcs
+            g.selectAll("path")
+                .data(pieData)
+                .join("path")
+                .attr("d", arc)
+                .attr("fill", d => color(d.data[0]))
+                .attr("stroke", "white")
+                .style("stroke-width", "2px")
+                .on("mouseover", (event, d) => {
+                    tooltip.style("visibility", "visible")
+                        .text(`${d.data[0]}: ${d.data[1]}`);
+                })
+                .on("mousemove", event => {
+                    tooltip.style("top", (event.pageY - 10) + "px")
+                        .style("left", (event.pageX + 10) + "px");
+                })
+                .on("mouseout", () => {
+                    tooltip.style("visibility", "hidden");
+                });
+
+            // Ajouter les labels
+            g.selectAll("text")
+                .data(pieData)
+                .join("text")
+                .attr("transform", d => `translate(${arc.centroid(d)})`)
+                .attr("dy", "0.35em")
+                .style("text-anchor", "middle")
+                .text(d => d.data[0]);
+
+        }).catch(error => console.error('Error fetching category sales data:', error));
+
+        // ERUPTION SOLAIRE
+      d3.json("/api/category_sales")
+        .then((categorySalesData) => {
+          d3.json("/api/burger_sales")
+            .then((burgerSalesData) => {
+              d3.json("/api/drink_sales")
+                .then((drinkSalesData) => {
+                    const width = 500;
+                    const radius = width / 2;
+
+                  // Création du conteneur pour le tooltip
+                  const tooltip = d3
+                    .select("body")
+                    .append("div")
+                    .attr("class", "tooltip")
+                    .style("position", "absolute")
+                    .style("background-color", "white")
+                    .style("border", "1px solid #ccc")
+                    .style("padding", "5px")
+                    .style("border-radius", "4px")
+                    .style("visibility", "hidden");
+      
+                  const svg = d3
+                    .select("#sunburst-chart")
+                        .append("svg")
+                        .attr("width", width)
+                        .attr("height", width)
+                        .append("g")
+                        .attr("transform", `translate(${radius}, ${radius})`);
+
+                  // Construire une structure hiérarchique triée pour le graphique
+                    const data = {
+                        name: "Ventes",
+                        children: [
+                            {
+                                name: "Burger",
+                        children: Object.entries(burgerSalesData)
+                          .map(([key, value]) => ({ name: key, value }))
+                          .sort((a, b) => b.value - a.value), // Trier par quantité décroissante
+                            },
+                            {
+                                name: "Drink",
+                        children: Object.entries(drinkSalesData)
+                          .map(([key, value]) => ({ name: key, value }))
+                          .sort((a, b) => b.value - a.value), // Trier par quantité décroissante
+                      },
+                    ],
+                    };
+
+                  const partition = d3.partition().size([2 * Math.PI, radius]);
+
+                  const root = d3.hierarchy(data).sum((d) => d.value);
+
+                    partition(root);
+
+                  // Définir les couleurs principales et leurs dégradés pour chaque catégorie
+                  const colorScales = {
+                    Burger: d3
+                      .scaleLinear()
+                      .domain([0, 1]) // Les poids seront normalisés
+                      .range(["#ffcc99", "#ff7f0e"]), // Couleur plus claire à plus foncée pour les burgers
+                    Drink: d3
+                      .scaleLinear()
+                      .domain([0, 1])
+                      .range(["#dbedff", "#0594f7"]), // Couleur plus claire à plus foncée pour les drinks
+                  };
+
+                  const arc = d3
+                    .arc()
+                    .startAngle((d) => d.x0)
+                    .endAngle((d) => d.x1)
+                    .innerRadius((d) => d.y0)
+                    .outerRadius((d) => d.y1);
+
+                    // Dessiner les arcs
+                  svg
+                    .selectAll("path")
+                        .data(root.descendants().slice(1)) // Ignorer le premier nœud (racine)
+                        .join("path")
+                        .attr("d", arc)
+                    .attr("fill", (d) => {
+                      const parentName =
+                        d.depth === 1 ? d.data.name : d.parent.data.name; // Catégorie parent
+                      const scale = colorScales[parentName];
+                      return d.depth === 1
+                        ? scale(1)
+                        : scale(d.value / d.parent.value); // Dégradé pour les sous-catégories
+                    })
+                    .on("mouseover", (event, d) => {
+                      tooltip
+                        .style("visibility", "visible")
+                    .text(
+                          `${d.ancestors()
+                            .map((node) => node.data.name)
+                          .reverse()
+                          .join(" > ")}\n${d.value || 0}`
+                    );
+                    })
+                    .on("mousemove", (event) => {
+                      tooltip
+                        .style("top", event.pageY - 10 + "px")
+                        .style("left", event.pageX + 10 + "px");
+                    })
+                    .on("mouseout", () => {
+                      tooltip.style("visibility", "hidden");
+                    });
+
+                    // Ajouter des labels
+                  svg
+                    .selectAll("text")
+                    .data(root.descendants().filter((d) => d.x1 - d.x0 > 0.03))
+                        .join("text")
+                    .attr("transform", (d) => {
+                      if (d.depth === 0) {
+                        return `translate(0, -10)`;
+                      }
+                      return `
+                    rotate(${(((d.x0 + d.x1) / 2) * 180) / Math.PI - 90})
+                            translate(${(d.y0 + d.y1) / 2},0)
+                            rotate(${(d.x0 + d.x1) / 2 > Math.PI ? 180 : 0})
+                        `;
+                    })
+                        .attr("dy", "0.35em")
+                        .attr("text-anchor", "middle")
+                    .style("font-size", (d) =>
+                      d.depth === 0 ? "24px" : "12px"
+                    )
+                    .text((d) => d.data.name);
+                })
+                .catch((error) =>
+                  console.error(
+                    "Error fetching drink sales data for sunburst:",
+                    error
+                  )
+                );
+            })
+            .catch((error) =>
+              console.error(
+                "Error fetching burger sales data for sunburst:",
+                error
+              )
+            );
+        })
+        .catch((error) =>
+          console.error(
+            "Error fetching category sales data for sunburst:",
+            error
+          )
+        );
+    </script>
+</body>
+</html>
