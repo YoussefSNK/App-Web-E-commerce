@@ -357,6 +357,18 @@
                     const width = 500;
                     const radius = width / 2;
 
+                  // Création du conteneur pour le tooltip
+                  const tooltip = d3
+                    .select("body")
+                    .append("div")
+                    .attr("class", "tooltip")
+                    .style("position", "absolute")
+                    .style("background-color", "white")
+                    .style("border", "1px solid #ccc")
+                    .style("padding", "5px")
+                    .style("border-radius", "4px")
+                    .style("visibility", "hidden");
+      
                   const svg = d3
                     .select("#sunburst-chart")
                         .append("svg")
@@ -423,23 +435,24 @@
                         ? scale(1)
                         : scale(d.value / d.parent.value); // Dégradé pour les sous-catégories
                     })
-                        .on("mouseover", function (event, d) {
-                      d3.select(this)
-                        .attr("stroke", "#000")
-                        .attr("stroke-width", 1);
-                        })
-                        .on("mouseout", function () {
-                            d3.select(this).attr("stroke", null);
-                        })
-                        .append("title")
+                    .on("mouseover", (event, d) => {
+                      tooltip
+                        .style("visibility", "visible")
                     .text(
-                      (d) =>
-                        `${d
-                          .ancestors()
-                          .map((d) => d.data.name)
+                          `${d.ancestors()
+                            .map((node) => node.data.name)
                           .reverse()
                           .join(" > ")}\n${d.value || 0}`
                     );
+                    })
+                    .on("mousemove", (event) => {
+                      tooltip
+                        .style("top", event.pageY - 10 + "px")
+                        .style("left", event.pageX + 10 + "px");
+                    })
+                    .on("mouseout", () => {
+                      tooltip.style("visibility", "hidden");
+                    });
 
                     // Ajouter des labels
                   svg
