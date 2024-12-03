@@ -51,7 +51,7 @@
 
         // Charger les données des ventes de burgers
         d3.json('/api/burger_sales').then(data => {
-            const svg = d3.select("#burger-sales").append("svg").attr("width", 500).attr("height", 300);
+            const svg = d3.select("#burger-sales").append("svg").attr("width", 450).attr("height", 300);
             
             const margin = {top: 20, right: 30, bottom: 60, left: 40};
             const width = 500 - margin.left - margin.right;
@@ -77,6 +77,15 @@
                 .attr("height", d => y(0) - y(d[1]))
                 .attr("width", x.bandwidth());
 
+            // Ajouter un titre au graphique
+            svg.append("text")
+                .attr("x", (width / 2))             
+                .attr("y", margin.top / 2)
+                .attr("text-anchor", "middle")  
+                .style("font-size", "16px") 
+                .style("text-decoration", "underline")  
+                .text("Ventes de Burgers par type de burger");
+
             svg.append("g")
                 .attr("transform", `translate(0,${height - margin.bottom})`)
                 .call(d3.axisBottom(x).tickSizeOuter(0))
@@ -91,7 +100,7 @@
 
         // Charger les données des ventes de boissons
         d3.json('/api/drink_sales').then(data => {
-            const svg = d3.select("#drink-sales").append("svg").attr("width", 500).attr("height", 300);
+            const svg = d3.select("#drink-sales").append("svg").attr("width", 450).attr("height", 300);
             
             const margin = {top: 20, right: 30, bottom: 60, left: 40};
             const width = 500 - margin.left - margin.right;
@@ -123,6 +132,15 @@
                 .selectAll("text")
                 .attr("transform", "rotate(45)")
                 .style("text-anchor", "start");
+            
+            // Ajouter un titre au graphique
+            svg.append("text")
+                .attr("x", (width / 2))             
+                .attr("y", margin.top / 2)
+                .attr("text-anchor", "middle")  
+                .style("font-size", "16px") 
+                .style("text-decoration", "underline")  
+                .text("Ventes de boisson par type de boisson");
 
             svg.append("g")
                 .attr("transform", `translate(${margin.left},0)`)
@@ -132,7 +150,7 @@
         // Charger les données du chiffre d'affaires mensuel
         d3.json('/api/monthly_revenue').then(data => {
             const svg = d3.select("#monthly-revenue").append("svg")
-                .attr("width", 500)
+                .attr("width", 450)
                 .attr("height", 300); // Augmenter la hauteur pour inclure le titre
     
             const margin = { top: 40, right: 30, bottom: 60, left: 40 }; // Espace pour le titre
@@ -284,6 +302,15 @@
                         .endAngle(d => d.x1)
                         .innerRadius(d => d.y0)
                         .outerRadius(d => d.y1);
+
+                    // Ajouter un titre au graphique
+                    svg.append("text")
+                        .attr("x", (width / 2))             
+                        .attr("y", margin.top / 2)
+                        .attr("text-anchor", "middle")  
+                        .style("font-size", "16px") 
+                        .style("text-decoration", "underline")  
+                        .text("Ventes de Burgers");
 
                     // Dessiner les arcs
                     svg.selectAll("path")
