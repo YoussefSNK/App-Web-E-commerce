@@ -454,10 +454,13 @@
                     rotate(${(((d.x0 + d.x1) / 2) * 180) / Math.PI - 90})
                             translate(${(d.y0 + d.y1) / 2},0)
                             rotate(${(d.x0 + d.x1) / 2 > Math.PI ? 180 : 0})
-                `
-                    )
+                        `;
+                    })
                         .attr("dy", "0.35em")
                         .attr("text-anchor", "middle")
+                    .style("font-size", (d) =>
+                      d.depth === 0 ? "24px" : "12px"
+                    )
                     .text((d) => d.data.name);
                 })
                 .catch((error) =>
