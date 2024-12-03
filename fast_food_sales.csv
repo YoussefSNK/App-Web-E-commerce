@@ -69,3 +69,179 @@ date;category;item;sales;revenue
 02/09/2023;drink;Iced Tea;90;135
 02/09/2023;drink;Milkshake;50;250
 02/09/2023;drink;Lemonade;70;105
+02/01/2023;burger;Cheeseburger;70;350
+02/01/2023;burger;Veggie Burger;45;270
+02/01/2023;drink;Coke;140;210
+02/01/2023;drink;Pepsi;130;195
+02/02/2023;burger;Cheeseburger;75;375
+02/02/2023;burger;Veggie Burger;50;300
+02/02/2023;drink;Coke;150;225
+02/02/2023;drink;Pepsi;140;210
+02/03/2023;burger;Cheeseburger;80;400
+02/03/2023;burger;Veggie Burger;55;330
+02/03/2023;drink;Coke;160;240
+02/03/2023;drink;Pepsi;150;225
+02/04/2023;burger;Cheeseburger;85;425
+02/04/2023;burger;Veggie Burger;60;360
+02/04/2023;drink;Coke;170;255
+02/04/2023;drink;Pepsi;160;240
+03/01/2023;burger;Cheeseburger;90;450
+03/01/2023;burger;Veggie Burger;65;390
+03/01/2023;drink;Coke;180;270
+03/01/2023;drink;Pepsi;170;255
+03/02/2023;burger;Cheeseburger;95;475
+03/02/2023;burger;Veggie Burger;70;420
+03/02/2023;drink;Coke;190;285
+03/02/2023;drink;Pepsi;180;270
+03/03/2023;burger;Cheeseburger;100;500
+03/03/2023;burger;Veggie Burger;75;450
+03/03/2023;drink;Coke;200;300
+03/03/2023;drink;Pepsi;190;285
+03/04/2023;burger;Cheeseburger;105;525
+03/04/2023;burger;Veggie Burger;80;480
+03/04/2023;drink;Coke;210;315
+03/04/2023;drink;Pepsi;200;300
+04/01/2023;burger;Cheeseburger;110;550
+04/01/2023;burger;Veggie Burger;85;510
+04/01/2023;drink;Coke;220;330
+04/01/2023;drink;Pepsi;210;315
+04/02/2023;burger;Cheeseburger;115;575
+04/02/2023;burger;Veggie Burger;90;540
+04/02/2023;drink;Coke;230;345
+04/02/2023;drink;Pepsi;220;330
+04/03/2023;burger;Cheeseburger;120;600
+04/03/2023;burger;Veggie Burger;95;570
+04/03/2023;drink;Coke;240;360
+04/03/2023;drink;Pepsi;230;345
+04/04/2023;burger;Cheeseburger;125;625
+04/04/2023;burger;Veggie Burger;100;600
+04/04/2023;drink;Coke;250;375
+04/04/2023;drink;Pepsi;240;360
+05/01/2023;burger;Cheeseburger;130;650
+05/01/2023;burger;Veggie Burger;105;630
+05/01/2023;drink;Coke;260;390
+05/01/2023;drink;Pepsi;250;375
+05/02/2023;burger;Cheeseburger;135;675
+05/02/2023;burger;Veggie Burger;110;660
+05/02/2023;drink;Coke;270;405
+05/02/2023;drink;Pepsi;260;390
+05/03/2023;burger;Cheeseburger;140;700
+05/03/2023;burger;Veggie Burger;115;690
+05/03/2023;drink;Coke;280;420
+05/03/2023;drink;Pepsi;270;405
+05/04/2023;burger;Cheeseburger;145;725
+05/04/2023;burger;Veggie Burger;120;720
+05/04/2023;drink;Coke;290;435
+05/04/2023;drink;Pepsi;280;420
+06/01/2023;burger;Cheeseburger;150;750
+06/01/2023;burger;Veggie Burger;125;750
+06/01/2023;drink;Coke;300;450
+06/01/2023;drink;Pepsi;290;435
+06/02/2023;burger;Cheeseburger;155;775
+06/02/2023;burger;Veggie Burger;130;780
+06/02/2023;drink;Coke;310;465
+06/02/2023;drink;Pepsi;300;450
+06/03/2023;burger;Cheeseburger;160;800
+06/03/2023;burger;Veggie Burger;135;810
+06/03/2023;drink;Coke;320;480
+06/03/2023;drink;Pepsi;310;465
+06/04/2023;burger;Cheeseburger;165;825
+06/04/2023;burger;Veggie Burger;140;840
+06/04/2023;drink;Coke;330;495
+06/04/2023;drink;Pepsi;320;480
+07/01/2023;burger;Cheeseburger;170;850
+07/01/2023;burger;Veggie Burger;145;870
+07/01/2023;drink;Coke;340;510
+07/01/2023;drink;Pepsi;330;495
+07/02/2023;burger;Cheeseburger;175;875
+07/02/2023;burger;Veggie Burger;150;900
+07/02/2023;drink;Coke;350;525
+07/02/2023;drink;Pepsi;340;510
+07/03/2023;burger;Cheeseburger;180;900
+07/03/2023;burger;Veggie Burger;155;930
+07/03/2023;drink;Coke;360;540
+07/03/2023;drink;Pepsi;350;525
+07/04/2023;burger;Cheeseburger;185;925
+07/04/2023;burger;Veggie Burger;160;960
+07/04/2023;drink;Coke;370;555
+07/04/2023;drink;Pepsi;360;540
+08/01/2023;burger;Cheeseburger;190;950
+08/01/2023;burger;Veggie Burger;165;990
+08/01/2023;drink;Coke;380;570
+08/01/2023;drink;Pepsi;370;555
+08/02/2023;burger;Cheeseburger;195;975
+08/02/2023;burger;Veggie Burger;170;1020
+08/02/2023;drink;Coke;390;585
+08/02/2023;drink;Pepsi;380;570
+08/03/2023;burger;Cheeseburger;200;1000
+08/03/2023;burger;Veggie Burger;175;1050
+08/03/2023;drink;Coke;400;600
+08/03/2023;drink;Pepsi;390;585
+08/04/2023;burger;Cheeseburger;205;1025
+08/04/2023;burger;Veggie Burger;180;1080
+08/04/2023;drink;Coke;410;615
+08/04/2023;drink;Pepsi;400;600
+09/01/2023;burger;Cheeseburger;210;1050
+09/01/2023;burger;Veggie Burger;185;1110
+09/01/2023;drink;Coke;420;630
+09/01/2023;drink;Pepsi;410;615
+09/02/2023;burger;Cheeseburger;215;1075
+09/02/2023;burger;Veggie Burger;190;1140
+09/02/2023;drink;Coke;430;645
+09/02/2023;drink;Pepsi;420;630
+09/03/2023;burger;Cheeseburger;220;1100
+09/03/2023;burger;Veggie Burger;195;1170
+09/03/2023;drink;Coke;440;660
+09/03/2023;drink;Pepsi;430;645
+09/04/2023;burger;Cheeseburger;225;1125
+09/04/2023;burger;Veggie Burger;200;1200
+09/04/2023;drink;Coke;450;675
+09/04/2023;drink;Pepsi;440;660
+10/01/2023;burger;Cheeseburger;230;1150
+10/01/2023;burger;Veggie Burger;205;1230
+10/01/2023;drink;Coke;460;690
+10/01/2023;drink;Pepsi;450;675
+10/02/2023;burger;Cheeseburger;235;1175
+10/02/2023;burger;Veggie Burger;210;1260
+10/02/2023;drink;Coke;470;705
+10/02/2023;drink;Pepsi;460;690
+10/03/2023;burger;Cheeseburger;240;1200
+10/03/2023;burger;Veggie Burger;215;1290
+10/03/2023;drink;Coke;480;720
+10/03/2023;drink;Pepsi;470;705
+10/04/2023;burger;Cheeseburger;245;1225
+10/04/2023;burger;Veggie Burger;220;1320
+10/04/2023;drink;Coke;490;735
+10/04/2023;drink;Pepsi;480;720
+11/01/2023;burger;Cheeseburger;250;1250
+11/01/2023;burger;Veggie Burger;225;1350
+11/01/2023;drink;Coke;500;750
+11/01/2023;drink;Pepsi;490;735
+11/02/2023;burger;Cheeseburger;255;1275
+11/02/2023;burger;Veggie Burger;230;1380
+11/02/2023;drink;Coke;510;765
+11/02/2023;drink;Pepsi;500;750
+11/03/2023;burger;Cheeseburger;260;1300
+11/03/2023;burger;Veggie Burger;235;1410
+11/03/2023;drink;Coke;520;780
+11/03/2023;drink;Pepsi;510;765
+11/04/2023;burger;Cheeseburger;265;1325
+11/04/2023;burger;Veggie Burger;240;1440
+11/04/2023;drink;Coke;530;795
+11/04/2023;drink;Pepsi;520;780
+12/01/2023;burger;Cheeseburger;270;1350
+12/01/2023;burger;Veggie Burger;245;1470
+12/01/2023;drink;Coke;540;810
+12/01/2023;drink;Pepsi;530;795
+12/02/2023;burger;Cheeseburger;275;1375
+12/02/2023;burger;Veggie Burger;250;1500
+12/02/2023;drink;Coke;550;825
+12/02/2023;drink;Pepsi;540;810
+12/03/2023;burger;Cheeseburger;280;1400
+12/03/2023;burger;Veggie Burger;255;1530
+12/03/2023;drink;Coke;560;840
+12/03/2023;drink;Pepsi;550;825
+12/04/2023;burger;Cheeseburger;285;1425
+12/04/2023;burger;Veggie Burger;260;1560
+12/04/2023;drink;Coke;570;855
+12/04/2023;drink;Pepsi;560;840
