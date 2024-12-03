@@ -173,14 +173,14 @@
                 .nice()
                 .range([height - margin.bottom, margin.top]);
     
-            // Titre du graphique
+            // Ajouter un titre au graphique
             svg.append("text")
-                .attr("x", width / 2 + margin.left)
+                .attr("x", (width / 2))             
                 .attr("y", margin.top / 2)
-                .attr("text-anchor", "middle")
-                .attr("font-size", "16px")
-                .attr("font-weight", "bold")
-                .text("Revenu mensuel");
+                .attr("text-anchor", "middle")  
+                .style("font-size", "16px") 
+                .style("text-decoration", "underline")  
+                .text("Revenue mensuel");
     
             svg.append("g")
                 .attr("fill", colors.revenue) // Couleur personnalisée
@@ -248,6 +248,16 @@
                 .attr("transform", d => `translate(${arc.centroid(d)})`)
                 .attr("text-anchor", "middle")
                 .attr("font-size", "12px");
+            
+            // Ajouter un titre au graphique
+            svg.append("text")
+                .attr("x", (width / 2))             
+                .attr("y", margin.top / 2)
+                .attr("text-anchor", "middle")  
+                .style("font-size", "16px") 
+                .style("text-decoration", "underline")  
+                .text("Proportion des ventes par boisson/burger");
+
         }).catch(error => console.error('Error fetching category sales data:', error));
 
         // ERUPTION SOLAIRE
@@ -302,15 +312,6 @@
                         .endAngle(d => d.x1)
                         .innerRadius(d => d.y0)
                         .outerRadius(d => d.y1);
-
-                    // Ajouter un titre au graphique
-                    svg.append("text")
-                        .attr("x", (width / 2))             
-                        .attr("y", margin.top / 2)
-                        .attr("text-anchor", "middle")  
-                        .style("font-size", "16px") 
-                        .style("text-decoration", "underline")  
-                        .text("Ventes de Burgers");
 
                     // Dessiner les arcs
                     svg.selectAll("path")
