@@ -1,50 +1,48 @@
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <title>Fast Food Dashboard</title>
     <script src="https://d3js.org/d3.v6.min.js"></script>
     <style>
+      .tooltip {
+        position: absolute;
+        visibility: hidden;
+        background: white;
+        border: 1px solid #ccc;
+        padding: 5px;
+        border-radius: 5px;
+        font-size: 12px;
+      }
 
-        .tooltip {
-            position: absolute;
-            visibility: hidden;
-            background: white;
-            border: 1px solid #ccc;
-            padding: 5px;
-            border-radius: 5px;
-            font-size: 12px;
-        }
-        
+      body {
+        font-family: Arial, sans-serif;
+        color: #333;
+        text-align: center;
 
-        body {
-            font-family: Arial, sans-serif;
-            color: #333;
-            text-align: center;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        height: 100vh;
+        overflow: hidden;
+      }
 
-            margin: 0;
-            padding: 0;
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
-          }
-          
-        #dashboard {
+      #dashboard {
         display: grid;
         grid-template-columns: 1fr 1fr; /* Deux colonnes : gauche et droite */
         height: 100%;
         width: 100%;
-        }
-          
-        #left {
+      }
+
+      #left {
         display: grid;
         grid-template-columns: 1fr 1fr; /* Deux colonnes */
-        grid-template-rows: 1fr 1fr;   /* Deux lignes */
+        grid-template-rows: 1fr 1fr; /* Deux lignes */
         gap: 10px; /* Espacement entre les graphiques */
         padding: 10px;
         box-sizing: border-box;
-        }
-          
-    .chart {
+      }
+
+      .chart {
         border: 1px solid #ccc;
         background-color: #f9f9f9;
         display: flex;
@@ -52,123 +50,450 @@
         align-items: center;
         position: relative;
         height: 100%;
-    }
-        #right {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 10px;
-            box-sizing: border-box;
-        }
+      }
+      #right {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 10px;
+        box-sizing: border-box;
+      }
 
+      #sunburst-chart {
+        width: 100%;
+        height: 100%;
+        border: 1px solid #ccc;
+        background-color: #f1f1f1;
+        position: relative; /* Ajouté pour le centrage */
+      }
 
-        #sunburst-chart {
-            width: 100%;
-            height: 100%;
-            border: 1px solid #ccc;
-            background-color: #f1f1f1;
-            position: relative; /* Ajouté pour le centrage */
-        }
-        
-        #sunburst-chart svg {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%); /* Centrer l'élément SVG */
-        }
-    
-        .chart h2 {
-            position: absolute;
-            top: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            margin: 0;
-        }
-    
-        .chart svg {
-            width: 90%;
-            height: 90%;
-            margin-top: 30px; /* Espacement entre le titre et le graphique */
-        }
+      #sunburst-chart svg {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%); /* Centrer l'élément SVG */
+      }
 
-        #category-sales svg {
-            left: 140px;
-        }
+      .chart h2 {
+        position: absolute;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        margin: 0;
+      }
 
+      .chart svg {
+        width: 90%;
+        height: 90%;
+        margin-top: 30px; /* Espacement entre le titre et le graphique */
+      }
 
+      #category-sales svg {
+        left: 140px;
+      }
     </style>
-</head>
-<body>
-
+  </head>
+  <body>
     <div id="dashboard">
+      <div id="left">
+        <div id="burger-sales" class="chart"><h2>Ventes de Burgers</h2></div>
+        <div id="drink-sales" class="chart"><h2>Ventes de Boissons</h2></div>
+        <div id="monthly-revenue" class="chart"><h2>Revenue Mensuel</h2></div>
+        <div id="category-sales" class="chart"><h2>Ventes</h2></div>
+      </div>
 
-
-        <div id="left">
-            <div id="burger-sales" class="chart"><h2>Ventes de Burgers</h2></div>
-            <div id="drink-sales" class="chart"><h2>Ventes de Boissons</h2></div>
-            <div id="monthly-revenue" class="chart"><h2>Revenue Mensuel</h2></div>
-            <div id="category-sales" class="chart"><h2>Ventes</h2></div>
+      <div id="right">
+        <div id="sunburst-chart" class="chart-container">
+          <h2>Graphique Sunburst</h2>
         </div>
-
-        <div id="right">
-            <div id="sunburst-chart" class="chart-container"><h2>Graphique Sunburst</h2></div>
-        </div>
+      </div>
     </div>
 
-
-
-
     <script>
-        const colors = {
-            burger: "#ff7f0e", // Orange pour les ventes de burgers
-            drink: "#1f77b4", // Bleu pour les ventes de boissons
-            revenue: "#2ca02c" // Vert pour le chiffre d'affaires mensuel
-        };
+      const colors = {
+        burger: "#ff7f0e", // Orange pour les ventes de burgers
+        drink: "#1f77b4", // Bleu pour les ventes de boissons
+        revenue: "#2ca02c", // Vert pour le chiffre d'affaires mensuel
+      };
 
-        // Charger les données des ventes de burgers
-        d3.json('/api/burger_sales').then(data => {
-            const container = d3.select("#burger-sales");
-            const svg = container.append("svg");
-            
-            const margin = { top: 20, right: 30, bottom: 60, left: 40 };
-            
-            // Fonction pour dessiner le graphique
-            const drawChart = () => {
-                // Effacer tout contenu existant dans le SVG
-                svg.selectAll("*").remove();
-        
-                // Dimensions dynamiques basées sur la taille de la div conteneur
-                const containerWidth = container.node().clientWidth;
-                const containerHeight = container.node().clientHeight;
-                const width = containerWidth - margin.left - margin.right;
-                const height = containerHeight - margin.top - margin.bottom;
-        
-                // Configurer les échelles
-                const x = d3.scaleBand()
-                    .domain(Object.keys(data))
-                    .range([margin.left, width - margin.right])
-                    .padding(0.1);
-                const y = d3.scaleLinear()
-                    .domain([0, d3.max(Object.values(data))])
-                    .nice()
-                    .range([height - margin.bottom, margin.top]);
-        
-                // Appliquer les dimensions au SVG
-                svg.attr("width", containerWidth)
-                    .attr("height", containerHeight);
-        
-                // Ajouter un titre
-                svg.append("text")
-                    .attr("x", width / 2 + margin.left)
-                    .attr("y", margin.top / 2)
-                    .attr("text-anchor", "middle")
-                    .style("font-size", "16px")
-                    .style("text-decoration", "underline");
-        
+      // Charger les données des ventes de burgers
+      d3.json("/api/burger_sales")
+        .then((data) => {
+          const container = d3.select("#burger-sales");
+          const svg = container.append("svg");
 
-                    
+          const margin = { top: 20, right: 30, bottom: 60, left: 40 };
+
+          // Fonction pour dessiner le graphique
+          const drawChart = () => {
+            // Effacer tout contenu existant dans le SVG
+            svg.selectAll("*").remove();
+
+            // Dimensions dynamiques basées sur la taille de la div conteneur
+            const containerWidth = container.node().clientWidth;
+            const containerHeight = container.node().clientHeight;
+            const width = containerWidth - margin.left - margin.right;
+            const height = containerHeight - margin.top - margin.bottom;
+
+            // Configurer les échelles
+            const x = d3
+              .scaleBand()
+              .domain(Object.keys(data))
+              .range([margin.left, width - margin.right])
+              .padding(0.1);
+            const y = d3
+              .scaleLinear()
+              .domain([0, d3.max(Object.values(data))])
+              .nice()
+              .range([height - margin.bottom, margin.top]);
+
+            // Appliquer les dimensions au SVG
+            svg.attr("width", containerWidth).attr("height", containerHeight);
+
+            // Ajouter un titre
+            svg
+              .append("text")
+              .attr("x", width / 2 + margin.left)
+              .attr("y", margin.top / 2)
+              .attr("text-anchor", "middle")
+              .style("font-size", "16px")
+              .style("text-decoration", "underline");
+
             // Ajouter un tooltip
-            const tooltip = d3.select("body").append("div")
+            const tooltip = d3
+              .select("body")
+              .append("div")
+              .attr("class", "tooltip")
+              .style("position", "absolute")
+              .style("visibility", "hidden")
+              .style("background", "#fff")
+              .style("border", "1px solid #ccc")
+              .style("padding", "5px")
+              .style("border-radius", "5px");
+            // Axes
+            svg
+              .append("g")
+              .attr("transform", `translate(0,${height - margin.bottom})`)
+              .call(d3.axisBottom(x))
+              .selectAll("text")
+              .attr("transform", "rotate(45)")
+              .style("text-anchor", "start");
+
+            svg
+              .append("g")
+              .attr("transform", `translate(${margin.left},0)`)
+              .call(d3.axisLeft(y));
+
+            // Barres
+            svg
+              .selectAll(".bar")
+              .data(Object.entries(data))
+              .join("rect")
+              .attr("class", "bar")
+              .attr("x", (d) => x(d[0]))
+              .attr("y", (d) => y(d[1]))
+              .attr("width", x.bandwidth())
+              .attr("height", (d) => y(0) - y(d[1]))
+              .attr("fill", colors.burger)
+              .on("mouseover", (event, d) => {
+                tooltip.style("visibility", "visible").text(`${d[0]}: ${d[1]}`);
+              })
+              .on("mousemove", (event) => {
+                tooltip
+                  .style("top", event.pageY - 10 + "px")
+                  .style("left", event.pageX + 10 + "px");
+              })
+              .on("mouseout", () => {
+                tooltip.style("visibility", "hidden");
+              });
+          };
+
+          // Dessiner le graphique initial
+          drawChart();
+
+          // Redessiner le graphique lors du redimensionnement de la fenêtre
+          window.addEventListener("resize", drawChart);
+        })
+        .catch((error) =>
+          console.error("Error fetching burger sales data:", error)
+        );
+
+      // Charger les données des ventes de boissons
+      d3.json("/api/drink_sales")
+        .then((data) => {
+          const container = d3.select("#drink-sales"); // Référence à la div contenant le graphique
+          const svg = container.append("svg"); // Créer un élément SVG à l'intérieur de la div
+
+          const margin = { top: 20, right: 30, bottom: 60, left: 40 };
+
+          // Fonction pour dessiner le graphique
+          const drawChart = () => {
+            // Effacer tout contenu existant dans le SVG
+            svg.selectAll("*").remove();
+
+            // Dimensions dynamiques basées sur la taille de la div conteneur
+            const containerWidth = container.node().clientWidth;
+            const containerHeight = container.node().clientHeight;
+            const width = containerWidth - margin.left - margin.right;
+            const height = containerHeight - margin.top - margin.bottom;
+
+            // Configurer les échelles
+            const x = d3
+              .scaleBand()
+              .domain(Object.keys(data))
+              .range([margin.left, width - margin.right])
+              .padding(0.1);
+            const y = d3
+              .scaleLinear()
+              .domain([0, d3.max(Object.values(data))])
+              .nice()
+              .range([height - margin.bottom, margin.top]);
+
+            // Appliquer les dimensions au SVG
+            svg.attr("width", containerWidth).attr("height", containerHeight);
+
+            // Ajouter un titre dans la div
+            container
+              .select("h2") // S'assurer que l'élément <h2> est sélectionné
+              .style("position", "absolute")
+              .style("top", "10px") // Positionner le titre tout en haut de la div
+              .style("left", "50%") // Centrer horizontalement
+              .style("transform", "translateX(-50%)"); // Corriger le centrage
+
+            const tooltip = d3
+              .select("body")
+              .append("div")
+              .attr("class", "tooltip")
+              .style("position", "absolute")
+              .style("visibility", "hidden")
+              .style("background", "#fff")
+              .style("border", "1px solid #ccc")
+              .style("padding", "5px")
+              .style("border-radius", "5px");
+
+            // Axes
+
+            svg
+              .append("g")
+              .attr("transform", `translate(0,${height - margin.bottom})`)
+              .call(d3.axisBottom(x))
+              .selectAll("text")
+              .attr("transform", "rotate(45)")
+              .style("text-anchor", "start");
+
+            svg
+              .append("g")
+              .attr("transform", `translate(${margin.left},0)`)
+              .call(d3.axisLeft(y));
+
+            // Barres
+            svg
+              .selectAll(".bar")
+              .data(Object.entries(data))
+              .join("rect")
+              .attr("class", "bar")
+              .attr("x", (d) => x(d[0]))
+              .attr("y", (d) => y(d[1]))
+              .attr("width", x.bandwidth())
+              .attr("height", (d) => y(0) - y(d[1]))
+              .attr("fill", colors.drink)
+              .on("mouseover", (event, d) => {
+                tooltip.style("visibility", "visible").text(`${d[0]}: ${d[1]}`);
+              })
+              .on("mousemove", (event) => {
+                tooltip
+                  .style("top", event.pageY - 10 + "px")
+                  .style("left", event.pageX + 10 + "px");
+              })
+              .on("mouseout", () => {
+                tooltip.style("visibility", "hidden");
+              });
+          };
+
+          // Dessiner le graphique initial
+          drawChart();
+
+          // Redessiner le graphique lors du redimensionnement de la fenêtre
+          window.addEventListener("resize", drawChart);
+        })
+        .catch((error) =>
+          console.error("Error fetching drink sales data:", error)
+        );
+
+      // Charger les données du chiffre d'affaires mensuel
+      d3.json("/api/monthly_revenue")
+        .then((data) => {
+          const container = d3.select("#monthly-revenue"); // Référence à la div contenant le graphique
+          const svg = container.append("svg"); // Créer un élément SVG à l'intérieur de la div
+
+          const margin = { top: 20, right: 30, bottom: 60, left: 40 };
+
+          // Fonction pour dessiner le graphique
+          const drawChart = () => {
+            // Effacer tout contenu existant dans le SVG
+            svg.selectAll("*").remove();
+
+            // Dimensions dynamiques basées sur la taille de la div conteneur
+            const containerWidth = container.node().clientWidth;
+            const containerHeight = container.node().clientHeight;
+            const width = containerWidth - margin.left - margin.right;
+            const height = containerHeight - margin.top - margin.bottom;
+
+            // Tableau des mois pour les noms
+            const months = [
+              "Janvier",
+              "Février",
+              "Mars",
+              "Avril",
+              "Mai",
+              "Juin",
+              "Juillet",
+              "Août",
+              "Septembre",
+              "Octobre",
+              "Novembre",
+              "Décembre",
+            ];
+
+            // Configurer les échelles
+            const x = d3
+              .scaleBand()
+              .domain(Object.keys(data).map((d) => months[+d - 1])) // Mapper les numéros aux noms des mois
+              .range([margin.left, width - margin.right])
+              .padding(0.1);
+            const y = d3
+              .scaleLinear()
+              .domain([0, d3.max(Object.values(data))])
+              .nice()
+              .range([height - margin.bottom, margin.top]);
+
+            // Appliquer les dimensions au SVG
+            svg.attr("width", containerWidth).attr("height", containerHeight);
+
+            // Ajouter un titre dans la div
+            container
+              .select("h2") // S'assurer que l'élément <h2> est sélectionné
+              .style("position", "absolute")
+              .style("top", "10px") // Positionner le titre tout en haut de la div
+              .style("left", "50%") // Centrer horizontalement
+              .style("transform", "translateX(-50%)"); // Corriger le centrage
+
+            // Ajouter un tooltip
+            const tooltip = d3
+              .select("body")
+              .append("div")
+              .attr("class", "tooltip")
+              .style("position", "absolute")
+              .style("visibility", "hidden")
+              .style("background", "#fff")
+              .style("border", "1px solid #ccc")
+              .style("padding", "5px")
+              .style("border-radius", "5px");
+
+            // Ajouter les barres
+            svg
+              .append("g")
+              .attr("fill", colors.revenue) // Couleur personnalisée
+              .selectAll("rect")
+              .data(Object.entries(data))
+              .join("rect")
+              .attr("x", (d) => x(months[+d[0] - 1]))
+              .attr("y", (d) => y(d[1]))
+              .attr("height", (d) => y(0) - y(d[1]))
+              .attr("width", x.bandwidth())
+              .on("mouseover", (event, d) => {
+                tooltip
+                  .style("visibility", "visible")
+                  .text(`${months[+d[0] - 1]}: ${d[1]}`);
+              })
+              .on("mousemove", (event) => {
+                tooltip
+                  .style("top", event.pageY - 10 + "px")
+                  .style("left", event.pageX + 10 + "px");
+              })
+              .on("mouseout", () => {
+                tooltip.style("visibility", "hidden");
+              });
+
+            // Ajouter les axes
+            svg
+              .append("g")
+              .attr("transform", `translate(0,${height - margin.bottom})`)
+              .call(d3.axisBottom(x))
+              .selectAll("text")
+              .attr("transform", "rotate(45)")
+              .style("text-anchor", "start");
+
+            svg
+              .append("g")
+              .attr("transform", `translate(${margin.left},0)`)
+              .call(d3.axisLeft(y));
+          };
+
+          // Dessiner le graphique initial
+          drawChart();
+
+          // Redessiner le graphique lors du redimensionnement de la fenêtre
+          window.addEventListener("resize", drawChart);
+        })
+        .catch((error) =>
+          console.error("Error fetching monthly revenue data:", error)
+        );
+
+      // Charger les données des ventes par catégorie pour le camembert
+      d3.json("/api/category_sales")
+        .then((data) => {
+          const container = d3.select("#category-sales"); // Référence à la div contenant le graphique
+          const containerWidth = container.node().clientWidth; // Largeur de la div conteneur
+          const containerHeight = container.node().clientHeight; // Hauteur de la div conteneur
+
+          // Calculer les dimensions du graphique (80% de la largeur et hauteur de la div)
+          const width = containerWidth * 0.8;
+          const height = containerHeight * 0.8;
+          const radius = Math.min(width, height) / 2;
+
+          // Créer l'élément SVG et le placer dans la div
+          const svg = container
+            .append("svg")
+            .attr("width", width)
+            .attr("height", height)
+            .style("position", "absolute")
+            .style("top", "50%")
+            .style("top", "250px")
+            .style("left", "50%")
+            .style("left", "275px")
+            .style("transform", "translate(-50%, -50%)"); // Centrer l'élément SVG dans la div
+
+          // Ajouter un titre dans la div
+          container
+            .select("h2")
+            .style("position", "absolute")
+            .style("top", "10px") // Positionner le titre tout en haut de la div
+            .style("left", "50%") // Centrer horizontalement
+            .style("transform", "translateX(-50%)"); // Corriger le centrage
+
+          const g = svg
+            .append("g")
+            .attr("transform", `translate(${width / 2}, ${height / 2})`); // Centrer le graphique dans le SVG
+
+          const pie = d3
+            .pie()
+            .value((d) => d[1])
+            .sort(null);
+
+          const arc = d3.arc().innerRadius(0).outerRadius(radius);
+
+          const color = d3
+            .scaleOrdinal()
+            .domain(Object.keys(data))
+            .range(["#ff7f0e", "#1f77b4"]); // Couleurs pour burger et drink
+
+          const pieData = pie(Object.entries(data));
+
+          // Ajouter un tooltip
+          const tooltip = d3
+            .select("body")
+            .append("div")
             .attr("class", "tooltip")
             .style("position", "absolute")
             .style("visibility", "hidden")
@@ -176,500 +501,226 @@
             .style("border", "1px solid #ccc")
             .style("padding", "5px")
             .style("border-radius", "5px");
-                // Axes
-                svg.append("g")
-                    .attr("transform", `translate(0,${height - margin.bottom})`)
-                    .call(d3.axisBottom(x))
-                    .selectAll("text")
-                    .attr("transform", "rotate(45)")
-                    .style("text-anchor", "start");
-        
-                svg.append("g")
-                    .attr("transform", `translate(${margin.left},0)`)
-                    .call(d3.axisLeft(y));
-        
-                // Barres
-                svg.selectAll(".bar")
-                    .data(Object.entries(data))
-                    .join("rect")
-                    .attr("class", "bar")
-                    .attr("x", d => x(d[0]))
-                    .attr("y", d => y(d[1]))
-                    .attr("width", x.bandwidth())
-                    .attr("height", d => y(0) - y(d[1]))
-                    .attr("fill", colors.burger)
-                    .on("mouseover", (event, d) => {
-                        tooltip.style("visibility", "visible")
-                            .text(`${d[0]}: ${d[1]}`);
-                    })
-                    .on("mousemove", event => {
-                        tooltip.style("top", (event.pageY - 10) + "px")
-                            .style("left", (event.pageX + 10) + "px");
-                    })
-                    .on("mouseout", () => {
-                        tooltip.style("visibility", "hidden");
-                    });;
-            };
-        
-            // Dessiner le graphique initial
-            drawChart();
-        
-            // Redessiner le graphique lors du redimensionnement de la fenêtre
-            window.addEventListener("resize", drawChart);
-        }).catch(error => console.error('Error fetching burger sales data:', error));
 
-        
-        // Charger les données des ventes de boissons
-        d3.json('/api/drink_sales').then(data => {
-            const container = d3.select("#drink-sales");  // Référence à la div contenant le graphique
-            const svg = container.append("svg");          // Créer un élément SVG à l'intérieur de la div
-            
-            const margin = {top: 20, right: 30, bottom: 60, left: 40};
-            
-            // Fonction pour dessiner le graphique
-            const drawChart = () => {
-                // Effacer tout contenu existant dans le SVG
-                svg.selectAll("*").remove();
-        
-                // Dimensions dynamiques basées sur la taille de la div conteneur
-                const containerWidth = container.node().clientWidth;
-                const containerHeight = container.node().clientHeight;
-                const width = containerWidth - margin.left - margin.right;
-                const height = containerHeight - margin.top - margin.bottom;
-        
-                // Configurer les échelles
-                const x = d3.scaleBand()
-                    .domain(Object.keys(data))
-                    .range([margin.left, width - margin.right])
-                    .padding(0.1);
-                const y = d3.scaleLinear()
-                    .domain([0, d3.max(Object.values(data))])
-                    .nice()
-                    .range([height - margin.bottom, margin.top]);
-        
-                // Appliquer les dimensions au SVG
-                svg.attr("width", containerWidth)
-                    .attr("height", containerHeight);
-        
-                // Ajouter un titre dans la div
-                container.select("h2")  // S'assurer que l'élément <h2> est sélectionné
-                    .style("position", "absolute")
-                    .style("top", "10px")  // Positionner le titre tout en haut de la div
-                    .style("left", "50%")  // Centrer horizontalement
-                    .style("transform", "translateX(-50%)");  // Corriger le centrage
-        
+          // Dessiner les arcs
+          g.selectAll("path")
+            .data(pieData)
+            .join("path")
+            .attr("d", arc)
+            .attr("fill", (d) => color(d.data[0]))
+            .attr("stroke", "white")
+            .style("stroke-width", "2px")
+            .on("mouseover", (event, d) => {
+              tooltip
+                .style("visibility", "visible")
+                .text(`${d.data[0]}: ${d.data[1]}`);
+            })
+            .on("mousemove", (event) => {
+              tooltip
+                .style("top", event.pageY - 10 + "px")
+                .style("left", event.pageX + 10 + "px");
+            })
+            .on("mouseout", () => {
+              tooltip.style("visibility", "hidden");
+            });
 
-                    const tooltip = d3.select("body").append("div")
-                    .attr("class", "tooltip")
-                    .style("position", "absolute")
-                    .style("visibility", "hidden")
-                    .style("background", "#fff")
-                    .style("border", "1px solid #ccc")
-                    .style("padding", "5px")
-                    .style("border-radius", "5px");
-    
+          // Ajouter les labels
+          g.selectAll("text")
+            .data(pieData)
+            .join("text")
+            .attr("transform", (d) => `translate(${arc.centroid(d)})`)
+            .attr("dy", "0.35em")
+            .style("text-anchor", "middle")
+            .text((d) => d.data[0]);
+        })
+        .catch((error) =>
+          console.error("Error fetching category sales data:", error)
+        );
 
-
-                    // Axes
-
-                svg.append("g")
-                    .attr("transform", `translate(0,${height - margin.bottom})`)
-                    .call(d3.axisBottom(x))
-                    .selectAll("text")
-                    .attr("transform", "rotate(45)")
-                    .style("text-anchor", "start");
-        
-                svg.append("g")
-                    .attr("transform", `translate(${margin.left},0)`)
-                    .call(d3.axisLeft(y));
-        
-                // Barres
-                svg.selectAll(".bar")
-                    .data(Object.entries(data))
-                    .join("rect")
-                    .attr("class", "bar")
-                    .attr("x", d => x(d[0]))
-                    .attr("y", d => y(d[1]))
-                    .attr("width", x.bandwidth())
-                    .attr("height", d => y(0) - y(d[1]))
-                    .attr("fill", colors.drink)
-                    .on("mouseover", (event, d) => {
-                        tooltip.style("visibility", "visible")
-                            .text(`${d[0]}: ${d[1]}`);
-                    })
-                    .on("mousemove", event => {
-                        tooltip.style("top", (event.pageY - 10) + "px")
-                            .style("left", (event.pageX + 10) + "px");
-                    })
-                    .on("mouseout", () => {
-                        tooltip.style("visibility", "hidden");
-                    });
-    ;
-            };
-        
-            // Dessiner le graphique initial
-            drawChart();
-        
-            // Redessiner le graphique lors du redimensionnement de la fenêtre
-            window.addEventListener("resize", drawChart);
-        }).catch(error => console.error('Error fetching drink sales data:', error));
-        
-        // Charger les données du chiffre d'affaires mensuel
-        d3.json('/api/monthly_revenue').then(data => {
-            const container = d3.select("#monthly-revenue");  // Référence à la div contenant le graphique
-            const svg = container.append("svg");              // Créer un élément SVG à l'intérieur de la div
-            
-            const margin = {top: 20, right: 30, bottom: 60, left: 40};
-            
-            // Fonction pour dessiner le graphique
-            const drawChart = () => {
-                // Effacer tout contenu existant dans le SVG
-                svg.selectAll("*").remove();
-        
-                // Dimensions dynamiques basées sur la taille de la div conteneur
-                const containerWidth = container.node().clientWidth;
-                const containerHeight = container.node().clientHeight;
-                const width = containerWidth - margin.left - margin.right;
-                const height = containerHeight - margin.top - margin.bottom;
-        
-                // Tableau des mois pour les noms
-                const months = [
-                    "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
-                    "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"
-                ];
-        
-                // Configurer les échelles
-                const x = d3.scaleBand()
-                    .domain(Object.keys(data).map(d => months[+d - 1])) // Mapper les numéros aux noms des mois
-                    .range([margin.left, width - margin.right])
-                    .padding(0.1);
-                const y = d3.scaleLinear()
-                    .domain([0, d3.max(Object.values(data))])
-                    .nice()
-                    .range([height - margin.bottom, margin.top]);
-        
-                // Appliquer les dimensions au SVG
-                svg.attr("width", containerWidth)
-                    .attr("height", containerHeight);
-        
-                // Ajouter un titre dans la div
-                container.select("h2")  // S'assurer que l'élément <h2> est sélectionné
-                    .style("position", "absolute")
-                    .style("top", "10px")  // Positionner le titre tout en haut de la div
-                    .style("left", "50%")  // Centrer horizontalement
-                    .style("transform", "translateX(-50%)");  // Corriger le centrage
-        
-                // Ajouter un tooltip
-                const tooltip = d3.select("body").append("div")
-                    .attr("class", "tooltip")
-                    .style("position", "absolute")
-                    .style("visibility", "hidden")
-                    .style("background", "#fff")
-                    .style("border", "1px solid #ccc")
-                    .style("padding", "5px")
-                    .style("border-radius", "5px");
-        
-                // Ajouter les barres
-                svg.append("g")
-                    .attr("fill", colors.revenue) // Couleur personnalisée
-                    .selectAll("rect")
-                    .data(Object.entries(data))
-                    .join("rect")
-                    .attr("x", d => x(months[+d[0] - 1]))
-                    .attr("y", d => y(d[1]))
-                    .attr("height", d => y(0) - y(d[1]))
-                    .attr("width", x.bandwidth())
-                    .on("mouseover", (event, d) => {
-                        tooltip.style("visibility", "visible")
-                            .text(`${months[+d[0] - 1]}: ${d[1]}`);
-                    })
-                    .on("mousemove", event => {
-                        tooltip.style("top", (event.pageY - 10) + "px")
-                            .style("left", (event.pageX + 10) + "px");
-                    })
-                    .on("mouseout", () => {
-                        tooltip.style("visibility", "hidden");
-                    });
-        
-                // Ajouter les axes
-                svg.append("g")
-                    .attr("transform", `translate(0,${height - margin.bottom})`)
-                    .call(d3.axisBottom(x))
-                    .selectAll("text")
-                    .attr("transform", "rotate(45)")
-                    .style("text-anchor", "start");
-        
-                svg.append("g")
-                    .attr("transform", `translate(${margin.left},0)`)
-                    .call(d3.axisLeft(y));
-            };
-        
-            // Dessiner le graphique initial
-            drawChart();
-        
-            // Redessiner le graphique lors du redimensionnement de la fenêtre
-            window.addEventListener("resize", drawChart);
-        }).catch(error => console.error('Error fetching monthly revenue data:', error));
-        
-        // Charger les données des ventes par catégorie pour le camembert
-        d3.json('/api/category_sales').then(data => {
-            const container = d3.select("#category-sales");  // Référence à la div contenant le graphique
-            const containerWidth = container.node().clientWidth;  // Largeur de la div conteneur
-            const containerHeight = container.node().clientHeight;  // Hauteur de la div conteneur
-        
-            // Calculer les dimensions du graphique (80% de la largeur et hauteur de la div)
-            const width = containerWidth * 0.8;
-            const height = containerHeight * 0.8;
-            const radius = Math.min(width, height) / 2;
-        
-            // Créer l'élément SVG et le placer dans la div
-            const svg = container.append("svg")
-                .attr("width", width)
-                .attr("height", height)
-                .style("position", "absolute")
-                .style("top", "50%")
-                .style("top", "250px")
-                .style("left", "50%")
-                .style("left", "275px")
-                .style("transform", "translate(-50%, -50%)");  // Centrer l'élément SVG dans la div
-        
-            // Ajouter un titre dans la div
-            container.select("h2")
-                .style("position", "absolute")
-                .style("top", "10px")  // Positionner le titre tout en haut de la div
-                .style("left", "50%")  // Centrer horizontalement
-                .style("transform", "translateX(-50%)");  // Corriger le centrage
-        
-            const g = svg.append("g")
-                .attr("transform", `translate(${width / 2}, ${height / 2})`);  // Centrer le graphique dans le SVG
-        
-            const pie = d3.pie()
-                .value(d => d[1])
-                .sort(null);
-        
-            const arc = d3.arc()
-                .innerRadius(0)
-                .outerRadius(radius);
-        
-            const color = d3.scaleOrdinal()
-                .domain(Object.keys(data))
-                .range(["#ff7f0e", "#1f77b4"]); // Couleurs pour burger et drink
-        
-            const pieData = pie(Object.entries(data));
-        
-            // Ajouter un tooltip
-            const tooltip = d3.select("body").append("div")
-                .attr("class", "tooltip")
-                .style("position", "absolute")
-                .style("visibility", "hidden")
-                .style("background", "#fff")
-                .style("border", "1px solid #ccc")
-                .style("padding", "5px")
-                .style("border-radius", "5px");
-        
-            // Dessiner les arcs
-            g.selectAll("path")
-                .data(pieData)
-                .join("path")
-                .attr("d", arc)
-                .attr("fill", d => color(d.data[0]))
-                .attr("stroke", "white")
-                .style("stroke-width", "2px")
-                .on("mouseover", (event, d) => {
-                    tooltip.style("visibility", "visible")
-                        .text(`${d.data[0]}: ${d.data[1]}`);
-                })
-                .on("mousemove", event => {
-                    tooltip.style("top", (event.pageY - 10) + "px")
-                        .style("left", (event.pageX + 10) + "px");
-                })
-                .on("mouseout", () => {
-                    tooltip.style("visibility", "hidden");
-                });
-        
-            // Ajouter les labels
-            g.selectAll("text")
-                .data(pieData)
-                .join("text")
-                .attr("transform", d => `translate(${arc.centroid(d)})`)
-                .attr("dy", "0.35em")
-                .style("text-anchor", "middle")
-                .text(d => d.data[0]);
-        
-        }).catch(error => console.error('Error fetching category sales data:', error));
-        
-        
-
-        // ERUPTION SOLAIRE
-        d3.json("/api/category_sales")
+      // ERUPTION SOLAIRE
+      d3.json("/api/category_sales")
         .then((categorySalesData) => {
-            d3.json("/api/burger_sales")
-                .then((burgerSalesData) => {
-                    d3.json("/api/drink_sales")
-                        .then((drinkSalesData) => {
-                            // Utilisation de la largeur du conteneur
-                            const container = document.getElementById("sunburst-chart");
-                            const width = container.clientWidth;
-    
-                            // Réduire la taille du radius pour rendre le graphique plus petit
-                            const radius = (width * 0.8) / 2; // 60% de la largeur du conteneur
-    
-                            // Création du conteneur pour le tooltip
-                            const tooltip = d3
-                                .select("body")
-                                .append("div")
-                                .attr("class", "tooltip")
-                                .style("position", "absolute")
-                                .style("background-color", "white")
-                                .style("border", "1px solid #ccc")
-                                .style("padding", "5px")
-                                .style("border-radius", "4px")
-                                .style("visibility", "hidden");
-    
-                            // Création de l'élément SVG
-                            const svg = d3
-                                .select("#sunburst-chart")
-                                .append("svg")
-                                .attr("width", width)
-                                .attr("height", width) // Le SVG occupera la largeur et la hauteur définies
-                                .append("g")
-                                .attr("transform", `translate(${width / 2}, ${width / 2})`); // Centrer l'élément
-    
-                            // Données hiérarchiques pour le graphique
-                            const data = {
-                                name: "Ventes",
-                                children: [
-                                    {
-                                        name: "Burger",
-                                        children: Object.entries(burgerSalesData)
-                                            .map(([key, value]) => ({ name: key, value }))
-                                            .sort((a, b) => b.value - a.value), // Trier par quantité décroissante
-                                    },
-                                    {
-                                        name: "Drink",
-                                        children: Object.entries(drinkSalesData)
-                                            .map(([key, value]) => ({ name: key, value }))
-                                            .sort((a, b) => b.value - a.value), // Trier par quantité décroissante
-                                    },
-                                ],
-                            };
-    
-                            // Partition pour la hiérarchie
-                            const partition = d3.partition().size([2 * Math.PI, radius]);
-    
-                            const root = d3.hierarchy(data).sum((d) => d.value);
-    
-                            partition(root);
-    
-                            // Définir les couleurs principales et dégradés
-                            const colorScales = {
-                                Burger: d3
-                                    .scaleLinear()
-                                    .domain([0, 1])
-                                    .range(["#ffcc99", "#ff7f0e"]), // Couleurs des burgers
-                                Drink: d3
-                                    .scaleLinear()
-                                    .domain([0, 1])
-                                    .range(["#dbedff", "#0594f7"]), // Couleurs des drinks
-                            };
-    
-                            // Arc du graphique
-                            const arc = d3
-                                .arc()
-                                .startAngle((d) => d.x0)
-                                .endAngle((d) => d.x1)
-                                .innerRadius((d) => d.y0)
-                                .outerRadius((d) => d.y1);
-    
-                            // Dessiner les arcs
-                            const paths = svg
-                            .selectAll("path")
-                            .data(root.descendants().slice(1))
-                            .join("path")
-                            .attr("d", arc)
-                            .attr("fill", (d) => {
-                                const parentName = d.depth === 1 ? d.data.name : d.parent.data.name;
-                                const scale = colorScales[parentName];
-                                return d.depth === 1
-                                    ? scale(1)
-                                    : scale(d.value / d.parent.value);
-                            });
+          d3.json("/api/burger_sales")
+            .then((burgerSalesData) => {
+              d3.json("/api/drink_sales")
+                .then((drinkSalesData) => {
+                  // Utilisation de la largeur du conteneur
+                  const container = document.getElementById("sunburst-chart");
+                  const width = container.clientWidth;
 
-                        // Ajouter un effet d'agrandissement à l'élément survolé
-                        paths
-                            .on("mouseover", (event, d) => {
-                                tooltip
-                                    .style("visibility", "visible")
-                                    .text(`${d.data.name} ${d.value || 0}`);
+                  // Réduire la taille du radius pour rendre le graphique plus petit
+                  const radius = (width * 0.8) / 2; // 60% de la largeur du conteneur
 
-                                // Agrandir la section sous la souris
-                                d3.select(event.target)
-                                    .transition()
-                                    .duration(200)
-                                    .attr("transform", "scale(1.1)")
-                                    .attr("opacity", 0.7); // Opacité réduite pour l'effet
+                  // Création du conteneur pour le tooltip
+                  const tooltip = d3
+                    .select("body")
+                    .append("div")
+                    .attr("class", "tooltip")
+                    .style("position", "absolute")
+                    .style("background-color", "white")
+                    .style("border", "1px solid #ccc")
+                    .style("padding", "5px")
+                    .style("border-radius", "4px")
+                    .style("visibility", "hidden");
 
-                                // Modifier l'arc pour l'agrandissement
-                                const enlargedArc = d3
-                                    .arc()
-                                    .startAngle((d) => d.x0)
-                                    .endAngle((d) => d.x1)
-                                    .innerRadius((d) => d.y0 * 0.95)
-                                    .outerRadius((d) => d.y1 * 1.05);
+                  // Création de l'élément SVG
+                  const svg = d3
+                    .select("#sunburst-chart")
+                    .append("svg")
+                    .attr("width", width)
+                    .attr("height", width) // Le SVG occupera la largeur et la hauteur définies
+                    .append("g")
+                    .attr("transform", `translate(${width / 2}, ${width / 2})`); // Centrer l'élément
 
-                                d3.select(event.target).attr("d", enlargedArc(d));
-                            })
-                            .on("mousemove", (event) => {
-                                tooltip
-                                    .style("top", event.pageY - 10 + "px")
-                                    .style("left", event.pageX + 10 + "px");
-                            })
-                            .on("mouseout", (event, d) => {
-                                tooltip.style("visibility", "hidden");
+                  // Données hiérarchiques pour le graphique
+                  const data = {
+                    name: "Ventes",
+                    children: [
+                      {
+                        name: "Burger",
+                        children: Object.entries(burgerSalesData)
+                          .map(([key, value]) => ({ name: key, value }))
+                          .sort((a, b) => b.value - a.value), // Trier par quantité décroissante
+                      },
+                      {
+                        name: "Drink",
+                        children: Object.entries(drinkSalesData)
+                          .map(([key, value]) => ({ name: key, value }))
+                          .sort((a, b) => b.value - a.value), // Trier par quantité décroissante
+                      },
+                    ],
+                  };
 
-                                // Réinitialiser l'arc à l'état d'origine
-                                d3.select(event.target)
-                                    .transition()
-                                    .duration(200)
-                                    .attr("transform", "scale(1)")
-                                    .attr("opacity", 1); // Rétablir l'opacité normale
+                  // Partition pour la hiérarchie
+                  const partition = d3.partition().size([2 * Math.PI, radius]);
 
-                                d3.select(event.target).attr("d", arc(d)); // Restaurer l'arc original
-                            });
+                  const root = d3.hierarchy(data).sum((d) => d.value);
 
-                        // Ajouter des labels
-                        svg
-                            .selectAll("text")
-                            .data(root.descendants().filter((d) => d.x1 - d.x0 > 0.03))
-                            .join("text")
-                            .attr("transform", (d) => {
-                                if (d.depth === 0) {
-                                    return `translate(0, -10)`;
-                                }
-                                return `
-                                    rotate(${(((d.x0 + d.x1) / 2) * 180) / Math.PI - 90})
-                                    translate(${(d.y0 + d.y1) / 2},0)
-                                    rotate(${(d.x0 + d.x1) / 2 > Math.PI ? 180 : 0})
-                                `;
-                            })
-                            .attr("dy", "0.35em")
-                            .attr("text-anchor", "middle")
-                            .style("font-size", (d) => (d.depth === 0 ? "24px" : "12px"))
-                            .text((d) => d.data.name);
+                  partition(root);
+
+                  // Définir les couleurs principales et dégradés
+                  const colorScales = {
+                    Burger: d3
+                      .scaleLinear()
+                      .domain([0, 1])
+                      .range(["#ffcc99", "#ff7f0e"]), // Couleurs des burgers
+                    Drink: d3
+                      .scaleLinear()
+                      .domain([0, 1])
+                      .range(["#dbedff", "#0594f7"]), // Couleurs des drinks
+                  };
+
+                  // Arc du graphique
+                  const arc = d3
+                    .arc()
+                    .startAngle((d) => d.x0)
+                    .endAngle((d) => d.x1)
+                    .innerRadius((d) => d.y0)
+                    .outerRadius((d) => d.y1);
+
+                  // Dessiner les arcs
+                  const paths = svg
+                    .selectAll("path")
+                    .data(root.descendants().slice(1))
+                    .join("path")
+                    .attr("d", arc)
+                    .attr("fill", (d) => {
+                      const parentName =
+                        d.depth === 1 ? d.data.name : d.parent.data.name;
+                      const scale = colorScales[parentName];
+                      return d.depth === 1
+                        ? scale(1)
+                        : scale(d.value / d.parent.value);
+                    });
+
+                  // Ajouter un effet d'agrandissement à l'élément survolé
+                  paths
+                    .on("mouseover", (event, d) => {
+                      tooltip
+                        .style("visibility", "visible")
+                        .text(`${d.data.name} ${d.value || 0}`);
+
+                      // Agrandir la section sous la souris
+                      d3.select(event.target)
+                        .transition()
+                        .duration(200)
+                        .attr("transform", "scale(1.1)")
+                        .attr("opacity", 0.7); // Opacité réduite pour l'effet
+
+                      // Modifier l'arc pour l'agrandissement
+                      const enlargedArc = d3
+                        .arc()
+                        .startAngle((d) => d.x0)
+                        .endAngle((d) => d.x1)
+                        .innerRadius((d) => d.y0 * 0.95)
+                        .outerRadius((d) => d.y1 * 1.05);
+
+                      d3.select(event.target).attr("d", enlargedArc(d));
                     })
-                    .catch((error) =>
-                        console.error("Error fetching drink sales data for sunburst:", error)
-                    );
+                    .on("mousemove", (event) => {
+                      tooltip
+                        .style("top", event.pageY - 10 + "px")
+                        .style("left", event.pageX + 10 + "px");
+                    })
+                    .on("mouseout", (event, d) => {
+                      tooltip.style("visibility", "hidden");
+
+                      // Réinitialiser l'arc à l'état d'origine
+                      d3.select(event.target)
+                        .transition()
+                        .duration(200)
+                        .attr("transform", "scale(1)")
+                        .attr("opacity", 1); // Rétablir l'opacité normale
+
+                      d3.select(event.target).attr("d", arc(d)); // Restaurer l'arc original
+                    });
+
+                  // Ajouter des labels
+                  svg
+                    .selectAll("text")
+                    .data(root.descendants().filter((d) => d.x1 - d.x0 > 0.03))
+                    .join("text")
+                    .attr("transform", (d) => {
+                      if (d.depth === 0) {
+                        return `translate(0, -10)`;
+                      }
+                      return `
+                                    rotate(${
+                                      (((d.x0 + d.x1) / 2) * 180) / Math.PI - 90
+                                    })
+                                    translate(${(d.y0 + d.y1) / 2},0)
+                                    rotate(${
+                                      (d.x0 + d.x1) / 2 > Math.PI ? 180 : 0
+                                    })
+                                `;
+                    })
+                    .attr("dy", "0.35em")
+                    .attr("text-anchor", "middle")
+                    .style("font-size", (d) =>
+                      d.depth === 0 ? "24px" : "12px"
+                    )
+                    .text((d) => d.data.name);
+                })
+                .catch((error) =>
+                  console.error(
+                    "Error fetching drink sales data for sunburst:",
+                    error
+                  )
+                );
             })
             .catch((error) =>
-                console.error("Error fetching burger sales data for sunburst:", error)
+              console.error(
+                "Error fetching burger sales data for sunburst:",
+                error
+              )
             );
-    })
-    .catch((error) =>
-        console.error("Error fetching category sales data for sunburst:", error)
-    );
-    
-    
+        })
+        .catch((error) =>
+          console.error(
+            "Error fetching category sales data for sunburst:",
+            error
+          )
+        );
     </script>
-</body>
+  </body>
 </html>
